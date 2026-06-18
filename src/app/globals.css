@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ---- Green landing page (ported from static-marketplace) ---- */
+
+/* Animated gradient background */
+.animated-bg {
+  background: linear-gradient(120deg, #e1ffe5 0%, #b8ffe3 50%, #e8ffe1 100%);
+  background-size: 400% 400%;
+  animation: gradientMove 18s ease-in-out infinite;
+  min-height: 100vh;
+}
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  25% { background-position: 50% 100%; }
+  50% { background-position: 100% 50%; }
+  75% { background-position: 50% 0%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Animated gradient text (hero highlight) */
+.animate-gradient {
+  background-size: 200% auto;
+  animation: textGradient 4s linear infinite;
+}
+@keyframes textGradient {
+  to { background-position: 200% center; }
+}
+
+/* Fade/slide/blur in animation */
+[data-animate] {
+  opacity: 0;
+  transform: translateY(30px) scale(0.98);
+  filter: blur(12px);
+  transition: opacity 0.7s cubic-bezier(.4,0,.2,1),
+    transform 0.7s cubic-bezier(.4,0,.2,1),
+    filter 0.7s cubic-bezier(.4,0,.2,1);
+}
+[data-animate].visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+/* Floating service category images */
+.service-image {
+  position: fixed;
+  width: 140px;
+  height: auto;
+  opacity: 0.7;
+  z-index: 5;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+}
+.service-image.digital-tech { top: 10%; left: 3%; transform: rotate(-8deg); animation: float1 6s ease-in-out infinite; }
+.service-image.professional { top: 8%; right: 2%; transform: rotate(12deg); animation: float2 7s ease-in-out infinite; }
+.service-image.construction { bottom: 12%; left: 2%; transform: rotate(6deg); animation: float3 5s ease-in-out infinite; }
+.service-image.home-services { bottom: 10%; right: 3%; transform: rotate(-10deg); animation: float4 8s ease-in-out infinite; }
+
+@keyframes float1 { 0%,100% { transform: rotate(-8deg) translateY(0); } 50% { transform: rotate(-8deg) translateY(-10px); } }
+@keyframes float2 { 0%,100% { transform: rotate(12deg) translateY(0); } 50% { transform: rotate(12deg) translateY(-12px); } }
+@keyframes float3 { 0%,100% { transform: rotate(6deg) translateY(0); } 50% { transform: rotate(6deg) translateY(-8px); } }
+@keyframes float4 { 0%,100% { transform: rotate(-10deg) translateY(0); } 50% { transform: rotate(-10deg) translateY(-15px); } }
+
+/* Hide floating images on mobile and small tablets */
+@media (max-width: 1024px) {
+  .service-image { display: none; }
+}
