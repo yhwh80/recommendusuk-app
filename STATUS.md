@@ -61,6 +61,11 @@ richer freelance-marketplace model — no change needed, just noting the diverge
 ### Still open
 - [ ] New pages are green-themed, but core inner pages (auth/dashboards/jobs/post-job)
       are still BLUE — full green restyle still pending.
+- [ ] **Email verification on signup (LATER).** Currently signup accepts any email,
+      unverified. Convex Auth Password supports built-in email verification — wire a
+      verification provider using **Resend** (SGP already uses Resend for outbound,
+      see [[email_setup]]). Put `RESEND_API_KEY` in Convex env vars (secrets-in-Convex).
+      Flow becomes: enter email → emailed code/link → verify → account active.
 
 ## Deployment plan → GitHub + Coolify (Hostinger)
 
