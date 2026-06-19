@@ -149,6 +149,19 @@ export default function JobDetailPage() {
                 <p className="text-gray-700 whitespace-pre-wrap">{job.description}</p>
               </div>
 
+              {job.skills && job.skills.length > 0 && (
+                <div className="mt-6">
+                  <h3 className="text-lg font-semibold mb-3">Skills Needed</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {job.skills.map((s) => (
+                      <span key={s} className="text-sm bg-green-50 text-green-700 border border-green-200 px-3 py-1.5 rounded-full">
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-600">
@@ -324,6 +337,12 @@ export default function JobDetailPage() {
                   <span className="text-gray-600">Posted</span>
                   <span className="font-medium">{formatDate(job._creationTime)}</span>
                 </div>
+                {job.deadline != null && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Deadline</span>
+                    <span className="font-medium">{formatDate(job.deadline)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-gray-600">Proposals</span>
                   <span className="font-medium">{job.currentBids}/{job.maxBids}</span>

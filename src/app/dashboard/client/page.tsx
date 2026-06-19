@@ -58,7 +58,10 @@ export default function ClientDashboard() {
             </div>
 
             <div className="flex items-center space-x-4">
-              <Link href="/jobs" className="text-gray-600 hover:text-blue-600 font-medium">
+              <Link href="/my-jobs" className="text-gray-600 hover:text-blue-600 font-medium">
+                My Jobs
+              </Link>
+              <Link href="/freelancers" className="text-gray-600 hover:text-blue-600 font-medium">
                 Browse Freelancers
               </Link>
               <div className="flex items-center space-x-2 text-sm text-gray-600">
@@ -153,7 +156,7 @@ export default function ClientDashboard() {
             </Link>
 
             <Link
-              href="/jobs"
+              href="/freelancers"
               className="flex items-center p-4 border-2 border-dashed border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-all group"
             >
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">

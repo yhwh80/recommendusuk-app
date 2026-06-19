@@ -30,7 +30,14 @@ export default defineSchema({
     totalRating: v.optional(v.number()),
     totalJobsCompleted: v.optional(v.number()),
     isRecommended: v.optional(v.boolean()),
-  }).index("email", ["email"]),
+    // --- public profile (parity with the green static-marketplace version) ---
+    bio: v.optional(v.string()),
+    skills: v.optional(v.array(v.string())),
+    hourlyRate: v.optional(v.number()),
+    location: v.optional(v.string()),
+  })
+    .index("email", ["email"])
+    .index("by_role", ["role"]),
 
   categories: defineTable({
     name: v.string(),
@@ -46,6 +53,8 @@ export default defineSchema({
     budgetMin: v.number(),
     budgetMax: v.number(),
     costCredits: v.number(),
+    skills: v.optional(v.array(v.string())),
+    deadline: v.optional(v.number()),
     status: v.union(
       v.literal("open"),
       v.literal("closed"),

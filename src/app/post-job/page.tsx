@@ -20,6 +20,8 @@ export default function PostJobPage() {
     description: '',
     budget_min: '',
     budget_max: '',
+    skills: '',
+    deadline: '',
   })
 
   useEffect(() => {
@@ -51,6 +53,13 @@ export default function PostJobPage() {
         description: formData.description,
         budgetMin: Math.round(parseFloat(formData.budget_min) * 100), // £ → pence
         budgetMax: Math.round(parseFloat(formData.budget_max) * 100),
+        skills: formData.skills
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean),
+        deadline: formData.deadline
+          ? new Date(formData.deadline).getTime()
+          : undefined,
       })
       setMessage('Job posted successfully!')
       setTimeout(() => {
@@ -208,6 +217,37 @@ export default function PostJobPage() {
                   className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="500.00"
                 />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Skills Needed
+                </label>
+                <input
+                  type="text"
+                  name="skills"
+                  value={formData.skills}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="React, Plumbing, Logo Design"
+                />
+                <p className="text-sm text-gray-500 mt-1">Comma-separated (optional)</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Deadline
+                </label>
+                <input
+                  type="date"
+                  name="deadline"
+                  value={formData.deadline}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <p className="text-sm text-gray-500 mt-1">When you need it done (optional)</p>
               </div>
             </div>
 

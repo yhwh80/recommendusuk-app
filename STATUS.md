@@ -35,6 +35,33 @@ npm run seed            # one-time demo data
 - [ ] Stripe: add real keys (publishable, secret, webhook secret, price IDs) for
       live payments. Until then, mock mode is used.
 
+## Feature-parity TODOs (from the green `static-marketplace` version)
+
+The green landing came from `yhwh80/static-marketplace` — which was a *separate,
+actually-live* build (static HTML + Supabase, deployed via Coolify on VPS
+207.180.207.13). It diverged from the Next.js `freelance-marketplace` codebase we
+rebuilt on. Things the green LIVE version had that this app doesn't yet:
+
+- [x] **Freelancer browse page** — `/freelancers` (`users.listFreelancers`), green-themed cards.
+- [x] **Public profile page** — `/profile/[id]` (`users.getPublicProfile`), avatar + skill badges + stats.
+- [x] **Own editable profile** — `/profile` (`users.updateProfile`), edit bio/skills/rate/location.
+- [x] **My Bids page** — `/my-bids` (`bids.listMine`). `/my-bids` link no longer 404s.
+- [x] **My Jobs page** — `/my-jobs` (`jobs.listMine`), linked from client dashboard.
+- [x] **Profile fields on users** — added `bio`, `skills[]`, `hourlyRate`, `location` (+ `by_role` index).
+- [x] **`skills` + `deadline` on jobs** — added to schema + `jobs.create`; post-job form has inputs;
+      job detail shows skill badges + deadline.
+
+Done 2026-06-19. Nav wired: client dashboard → My Jobs + Browse Freelancers (now `/freelancers`);
+freelancer dashboard → Update Profile (`/profile`) + My Proposals (`/my-bids`) now resolve.
+
+Note: the green version used a SINGLE `budget` (decimal) + `category` (text),
+whereas our schema uses `budgetMin`/`budgetMax` (pence) + `categoryId`. We kept the
+richer freelance-marketplace model — no change needed, just noting the divergence.
+
+### Still open
+- [ ] New pages are green-themed, but core inner pages (auth/dashboards/jobs/post-job)
+      are still BLUE — full green restyle still pending.
+
 ## Deployment plan → GitHub + Coolify (Hostinger)
 
 Same overall flow as the Driving Instructor Directory. **Important:** the Convex
@@ -57,6 +84,28 @@ backend is hosted by Convex (cloud) — Coolify only hosts the Next.js frontend.
    (it's inlined into the client bundle).
 5. **Point domain/subdomain** at the Coolify app; confirm Convex Auth `SITE_URL`
    matches it.
+
+## Secrets / keys — single secure home in Convex
+
+Goal (SGP): keep all keys in Convex. Convex's secure store = **environment
+variables** (encrypted, server-only) — set via dashboard (Settings → Environment
+Variables) or `npx convex env set NAME value` (dev) / `... --prod` (prod).
+Dev and prod have SEPARATE env vars.
+
+To make Convex the single home for *secret* keys, move Stripe server logic out of
+the Next.js API routes into **Convex httpActions/actions**. Then:
+
+| Key | Lives in |
+|---|---|
+| `JWT_PRIVATE_KEY`, `JWKS`, `SITE_URL` | Convex env 🔒 (already set on dev) |
+| `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | Convex env 🔒 (after Stripe→Convex refactor) |
+| Stripe price IDs | Convex env (config) |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Coolify (public by design) |
+| `NEXT_PUBLIC_CONVEX_URL` | Coolify (public, build-time) |
+
+After the refactor, the Coolify VPS holds ONLY public values — no secrets.
+TODO when deploying: do the Stripe→Convex action refactor, then set the secret
+keys with `npx convex env set ... --prod`.
 
 ## Key references
 

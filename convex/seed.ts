@@ -84,6 +84,10 @@ export const run = internalMutation({
       totalRating: 5,
       totalJobsCompleted: 1,
       isRecommended: true,
+      bio: "Full-stack web developer specialising in fast, modern sites for UK small businesses. 8+ years building React/Next.js apps.",
+      skills: ["React", "Next.js", "TypeScript", "Tailwind", "Stripe"],
+      hourlyRate: 45,
+      location: "Brighton, UK",
     });
     await ctx.db.insert("creditTransactions", {
       userId: proId,

@@ -100,6 +100,8 @@ export const create = mutation({
     categoryId: v.optional(v.id("categories")),
     budgetMin: v.number(),
     budgetMax: v.number(),
+    skills: v.optional(v.array(v.string())),
+    deadline: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -120,6 +122,8 @@ export const create = mutation({
       description: args.description,
       budgetMin: args.budgetMin,
       budgetMax: args.budgetMax,
+      skills: args.skills,
+      deadline: args.deadline,
       costCredits: JOB_COST_CREDITS,
       status: "open",
       maxBids: MAX_BIDS,
