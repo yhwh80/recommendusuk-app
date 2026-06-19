@@ -2,6 +2,14 @@
 
 _Last updated: 2026-06-18_
 
+## Pick up here (last session: 2026-06-19)
+
+Parity features built (freelancers, profiles, my-bids, my-jobs, skills/deadline) and
+the dark-mode form-text contrast bug fixed. SGP signed up a real freelancer account
+and was mid-way through testing a job post. Git: 3 commits, **not yet pushed to GitHub**.
+Next likely: (a) full green restyle of the blue inner pages, (b) GitHub push + Coolify
+deploy, (c) email verification via Resend. See "Still open" + deployment sections below.
+
 ## Where we are ✅
 
 A working **Next.js 15 + Convex** freelance marketplace, rebuilt from the old
