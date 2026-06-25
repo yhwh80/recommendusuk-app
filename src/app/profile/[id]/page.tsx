@@ -10,6 +10,7 @@ export default function PublicProfilePage() {
   const params = useParams()
   const id = params.id as Id<'users'>
   const profile = useQuery(api.users.getPublicProfile, { id })
+  const reviews = useQuery(api.ratings.listForUser, { userId: id })
 
   if (profile === undefined) {
     return (
@@ -87,7 +88,7 @@ export default function PublicProfilePage() {
         </div>
 
         {/* Skills */}
-        <div className="bg-white rounded-2xl border border-green-100 p-8">
+        <div className="bg-white rounded-2xl border border-green-100 p-8 mb-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Skills</h2>
           {profile.skills.length === 0 ? (
             <p className="text-gray-500">No skills listed yet.</p>
@@ -97,6 +98,37 @@ export default function PublicProfilePage() {
                 <span key={s} className="text-sm bg-green-50 text-green-700 border border-green-200 px-3 py-1.5 rounded-full">
                   {s}
                 </span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Reviews */}
+        <div className="bg-white rounded-2xl border border-green-100 p-8">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Reviews {reviews && reviews.length > 0 && `(${reviews.length})`}
+          </h2>
+          {reviews === undefined ? (
+            <p className="text-gray-400">Loading…</p>
+          ) : reviews.length === 0 ? (
+            <p className="text-gray-500">No reviews yet.</p>
+          ) : (
+            <div className="space-y-4">
+              {reviews.map((r) => (
+                <div key={r._id} className="border border-gray-100 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span>{'⭐'.repeat(r.rating)}</span>
+                    {r.recommended && (
+                      <span className="text-green-700 text-sm font-medium">✓ Recommended</span>
+                    )}
+                  </div>
+                  <p className="text-gray-700 text-sm">{r.reviewText}</p>
+                  {r.responseText && (
+                    <p className="text-gray-500 text-sm mt-2 pl-3 border-l-2 border-green-200">
+                      <span className="font-medium">Response:</span> {r.responseText}
+                    </p>
+                  )}
+                </div>
               ))}
             </div>
           )}

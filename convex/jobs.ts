@@ -155,6 +155,10 @@ export const acceptBid = mutation({
     const job = await ctx.db.get(jobId);
     if (!job) throw new Error("Job not found");
     if (job.clientId !== userId) throw new Error("Not your job");
+    if (job.status === "completed") throw new Error("Job is already completed");
+    if (job.selectedProfessionalId) {
+      throw new Error("You've already hired a freelancer for this job");
+    }
 
     const bid = await ctx.db.get(bidId);
     if (!bid || bid.jobId !== jobId) throw new Error("Bid not found for this job");
@@ -168,7 +172,7 @@ export const acceptBid = mutation({
   },
 });
 
-// Mark a job complete.
+// Mark a job complete (owner only; only after a freelancer has been hired).
 export const complete = mutation({
   args: { jobId: v.id("jobs") },
   handler: async (ctx, { jobId }) => {
@@ -177,7 +181,11 @@ export const complete = mutation({
     const job = await ctx.db.get(jobId);
     if (!job) throw new Error("Job not found");
     if (job.clientId !== userId) throw new Error("Not your job");
-    await ctx.db.patch(jobId, { status: "completed" });
+    if (!job.selectedProfessionalId) {
+      throw new Error("Accept a freelancer's proposal before marking complete");
+    }
+    if (job.status === "completed") throw new Error("Job is already completed");
+    await ctx.db.patch(jobId, { status: "completed", completedAt: Date.now() });
   },
 });
 

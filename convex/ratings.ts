@@ -14,6 +14,17 @@ export const listForUser = query({
   },
 });
 
+// Reviews left on a specific job (used to show/lock the review form).
+export const forJob = query({
+  args: { jobId: v.id("jobs") },
+  handler: async (ctx, { jobId }) => {
+    return await ctx.db
+      .query("ratings")
+      .withIndex("by_job", (q) => q.eq("jobId", jobId))
+      .collect();
+  },
+});
+
 // Leave a 5-star rating + "I recommend" flag, and roll it into the reviewee's totals.
 export const create = mutation({
   args: {
@@ -29,6 +40,14 @@ export const create = mutation({
     if (args.rating < 1 || args.rating > 5) {
       throw new Error("Rating must be between 1 and 5");
     }
+
+    // One review per reviewer per job.
+    const existing = await ctx.db
+      .query("ratings")
+      .withIndex("by_job", (q) => q.eq("jobId", args.jobId))
+      .filter((q) => q.eq(q.field("reviewerId"), reviewerId))
+      .first();
+    if (existing) throw new Error("You've already reviewed this job");
 
     const ratingId = await ctx.db.insert("ratings", {
       jobId: args.jobId,

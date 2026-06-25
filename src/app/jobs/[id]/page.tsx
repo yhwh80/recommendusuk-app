@@ -18,9 +18,42 @@ export default function JobDetailPage() {
   const job = useQuery(api.jobs.getWithClient, { id: jobId })
   const bids = useQuery(api.bids.listByJobWithUser, { jobId })
   const user = useCurrentUser()
+  const reviews = useQuery(api.ratings.forJob, { jobId })
   const createBid = useMutation(api.bids.create)
   const removeJob = useMutation(api.jobs.remove)
   const acceptBid = useMutation(api.jobs.acceptBid)
+  const completeJob = useMutation(api.jobs.complete)
+  const createReview = useMutation(api.ratings.create)
+
+  const [rating, setRating] = useState(5)
+  const [reviewText, setReviewText] = useState('')
+  const [recommended, setRecommended] = useState(true)
+
+  async function handleComplete() {
+    if (!window.confirm('Mark this job as complete? You can then leave a review.')) return
+    try {
+      await completeJob({ jobId })
+    } catch (error: unknown) {
+      setMessage(error instanceof Error ? error.message : 'Failed to complete job')
+    }
+  }
+
+  async function handleReview(e: React.FormEvent) {
+    e.preventDefault()
+    if (!job?.selectedProfessionalId) return
+    try {
+      await createReview({
+        jobId,
+        revieweeId: job.selectedProfessionalId,
+        rating,
+        reviewText,
+        recommended,
+      })
+      setReviewText('')
+    } catch (error: unknown) {
+      setMessage(error instanceof Error ? error.message : 'Failed to submit review')
+    }
+  }
 
   async function handleAccept(bidId: Id<'bids'>, proName: string | null) {
     if (!window.confirm(`Accept ${proName || 'this freelancer'}'s proposal? This closes the job to further bids.`)) {
@@ -194,6 +227,14 @@ export default function JobDetailPage() {
                   >
                     {deleting ? 'Deleting…' : '🗑 Delete Job'}
                   </button>
+                  {job.selectedProfessionalId && job.status !== 'completed' && (
+                    <button
+                      onClick={handleComplete}
+                      className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                      ✅ Mark as Complete
+                    </button>
+                  )}
                   {job.status === 'open' && (
                     <span className="text-xs text-gray-500">
                       {job.currentBids === 0
@@ -310,7 +351,7 @@ export default function JobDetailPage() {
                         }`}>
                           {bid.status}
                         </span>
-                        {isOwner && job.status === 'open' && bid.status === 'pending' && (
+                        {isOwner && !job.selectedProfessionalId && job.status !== 'completed' && bid.status === 'pending' && (
                           <button
                             onClick={() => handleAccept(bid._id, bid.professionalName)}
                             className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
@@ -332,6 +373,73 @@ export default function JobDetailPage() {
                 </div>
               )}
             </div>
+
+            {/* Complete → Review (owner, completed jobs) */}
+            {user && job.clientId === user._id && job.status === 'completed' && job.selectedProfessionalId && (
+              <div className="bg-white rounded-lg shadow-sm border p-6 mt-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Leave a Review</h2>
+                {reviews?.some((r) => r.reviewerId === user._id) ? (
+                  (() => {
+                    const mine = reviews.find((r) => r.reviewerId === user._id)!
+                    return (
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span>{'⭐'.repeat(mine.rating)}</span>
+                          {mine.recommended && (
+                            <span className="text-green-700 text-sm font-medium">✓ Recommended</span>
+                          )}
+                        </div>
+                        <p className="text-gray-700 text-sm">{mine.reviewText}</p>
+                        <p className="text-xs text-gray-400 mt-2">Thanks — your review is on the freelancer&apos;s profile.</p>
+                      </div>
+                    )
+                  })()
+                ) : (
+                  <form onSubmit={handleReview} className="space-y-4">
+                    <p className="text-gray-600 text-sm">Rate the freelancer you hired — it builds their reputation.</p>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Rating</label>
+                      <div className="flex gap-1">
+                        {[1, 2, 3, 4, 5].map((n) => (
+                          <button
+                            key={n}
+                            type="button"
+                            onClick={() => setRating(n)}
+                            className={`text-3xl transition-opacity ${n <= rating ? 'opacity-100' : 'opacity-30'}`}
+                            aria-label={`${n} star${n > 1 ? 's' : ''}`}
+                          >
+                            ⭐
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <textarea
+                      value={reviewText}
+                      onChange={(e) => setReviewText(e.target.value)}
+                      required
+                      rows={3}
+                      placeholder="How was the work? Would you hire them again?"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                    <label className="flex items-center gap-2 text-sm text-gray-700">
+                      <input
+                        type="checkbox"
+                        checked={recommended}
+                        onChange={(e) => setRecommended(e.target.checked)}
+                        className="h-4 w-4"
+                      />
+                      I recommend this freelancer
+                    </label>
+                    <button
+                      type="submit"
+                      className="bg-green-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                    >
+                      Submit Review
+                    </button>
+                  </form>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Sidebar */}
