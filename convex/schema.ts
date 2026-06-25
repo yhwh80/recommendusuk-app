@@ -122,5 +122,6 @@ export default defineSchema({
     readAt: v.optional(v.number()),
   })
     .index("by_job", ["jobId"])
-    .index("by_recipient", ["recipientId"]),
+    .index("by_recipient", ["recipientId"])
+    .index("by_sender", ["senderId"]),
 });

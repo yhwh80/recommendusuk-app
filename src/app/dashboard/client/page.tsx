@@ -12,6 +12,7 @@ export default function ClientDashboard() {
   const { isLoading, isAuthenticated } = useConvexAuth()
   const user = useCurrentUser()
   const jobs = useQuery(api.jobs.listMine)
+  const unread = useQuery(api.messages.unreadCount)
   const { signOut } = useAuthActions()
   const router = useRouter()
 
@@ -63,6 +64,14 @@ export default function ClientDashboard() {
               </Link>
               <Link href="/freelancers" className="text-gray-600 hover:text-green-600 font-medium">
                 Browse Freelancers
+              </Link>
+              <Link href="/messages" className="relative text-gray-600 hover:text-green-600 font-medium">
+                Messages
+                {!!unread && unread > 0 && (
+                  <span className="absolute -top-2 -right-3 bg-green-500 text-white text-xs font-semibold rounded-full px-1.5">
+                    {unread}
+                  </span>
+                )}
               </Link>
               <div className="flex items-center space-x-2 text-sm text-gray-600">
                 <span>Welcome, {user.name}</span>

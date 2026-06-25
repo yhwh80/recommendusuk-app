@@ -538,6 +538,16 @@ export default function JobDetailPage() {
               </div>
             )}
 
+            {/* Message the client (non-owners) */}
+            {user && job.clientId !== user._id && (
+              <Link
+                href={`/messages/${job.clientId}`}
+                className="block w-full text-center bg-white border border-green-200 text-green-700 py-3 rounded-lg font-semibold hover:bg-green-50 transition-colors mb-6"
+              >
+                💬 Message {job.clientName || 'the client'}
+              </Link>
+            )}
+
             {/* Job Stats */}
             <div className="bg-white rounded-lg shadow-sm border p-6">
               <h3 className="text-lg font-bold text-gray-900 mb-4">Job Statistics</h3>

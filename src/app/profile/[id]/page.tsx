@@ -5,12 +5,14 @@ import { useParams } from 'next/navigation'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
 import { Id } from '../../../../convex/_generated/dataModel'
+import { useCurrentUser } from '@/lib/useCurrentUser'
 
 export default function PublicProfilePage() {
   const params = useParams()
   const id = params.id as Id<'users'>
   const profile = useQuery(api.users.getPublicProfile, { id })
   const reviews = useQuery(api.ratings.listForUser, { userId: id })
+  const me = useCurrentUser()
 
   if (profile === undefined) {
     return (
@@ -77,6 +79,14 @@ export default function PublicProfilePage() {
                   <span className="text-green-600 font-medium">£{profile.hourlyRate}/hr</span>
                 )}
               </div>
+              {me && me._id !== id && (
+                <Link
+                  href={`/messages/${id}`}
+                  className="inline-flex items-center gap-2 mt-4 px-5 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  💬 Message {profile.name?.split(' ')[0] || 'freelancer'}
+                </Link>
+              )}
             </div>
           </div>
         </div>
