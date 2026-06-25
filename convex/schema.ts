@@ -53,6 +53,7 @@ export default defineSchema({
     budgetMin: v.number(),
     budgetMax: v.number(),
     costCredits: v.number(),
+    location: v.optional(v.string()),
     skills: v.optional(v.array(v.string())),
     deadline: v.optional(v.number()),
     status: v.union(

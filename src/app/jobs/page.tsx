@@ -139,6 +139,12 @@ export default function JobsPage() {
                         <span>📋</span>
                         <span>{job.currentBids}/{job.maxBids} proposals</span>
                       </div>
+                      {job.location && (
+                        <div className="flex items-center space-x-1">
+                          <span>📍</span>
+                          <span>{job.location}</span>
+                        </div>
+                      )}
                       <div className="flex items-center space-x-1">
                         <span>👤</span>
                         <span>Posted by {job.clientName || 'Client'}</span>

@@ -351,6 +351,12 @@ export default function JobDetailPage() {
                   <span className="text-gray-600">Status</span>
                   <span className="font-medium capitalize">{job.status}</span>
                 </div>
+                {job.location && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Area</span>
+                    <span className="font-medium">{job.location}</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-gray-600">Client</span>
                   <span className="font-medium">{job.clientName || 'Anonymous'}</span>

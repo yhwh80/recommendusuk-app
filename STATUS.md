@@ -78,6 +78,28 @@ richer freelance-marketplace model — no change needed, just noting the diverge
       see [[email_setup]]). Put `RESEND_API_KEY` in Convex env vars (secrets-in-Convex).
       Flow becomes: enter email → emailed code/link → verify → account active.
 
+## DEPLOY PROGRESS (2026-06-25)
+
+- [x] **GitHub repo:** https://github.com/yhwh80/recommendusuk-app (PUBLIC — flip to
+      private once Coolify is connected). 5 commits pushed, `main`.
+- [x] **Convex PRODUCTION deployed:** `https://fearless-newt-271.convex.cloud`
+      (dev remains `pleasant-warbler-150`). Auth keys + `SITE_URL=https://recommendusjobsuk.com`
+      set on prod vault.
+- [x] **Coolify app DEPLOYED + LIVE** (2026-06-25) on VPS **72.62.133.181** (dashboard
+      http://72.62.133.181:8000). Build var `NEXT_PUBLIC_CONVEX_URL=https://fearless-newt-271.convex.cloud`
+      + `NODE_OPTIONS=--no-experimental-webstorage`. Verified: HTTPS 200, valid SSL, green
+      site rendering, baked to PROD Convex. (72.62.210.209 / KVM 1 = Icecast/Urban Radio — untouched.)
+      Build gotcha hit + fixed: Coolify breaks `nixpacks` if the Domains field has >1 domain
+      (custom + auto sslip.io) → keep ONE domain in the field.
+- [x] **DNS** — `recommendusjobsuk.com` root + www both resolve → **72.62.133.181**.
+      ⚠️ www has no SSL cert yet (only root). Optional: add www in Coolify or www→root redirect.
+- [ ] Flip GitHub repo to private after Coolify connected.
+- [ ] (Later) Stripe→Convex refactor + real keys; email verification via Resend.
+
+Domain: **recommendusjobsuk.com** (owned via Namecheap). Prod DB is EMPTY (no demo data);
+users sign up fresh on the live site. Dev account sgp7@hotmail.co.uk lives in the DEV
+deployment only.
+
 ## Deployment plan → GitHub + Coolify (Hostinger)
 
 Same overall flow as the Driving Instructor Directory. **Important:** the Convex

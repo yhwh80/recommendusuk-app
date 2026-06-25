@@ -20,6 +20,7 @@ export default function PostJobPage() {
     description: '',
     budget_min: '',
     budget_max: '',
+    location: '',
     skills: '',
     deadline: '',
   })
@@ -53,6 +54,7 @@ export default function PostJobPage() {
         description: formData.description,
         budgetMin: Math.round(parseFloat(formData.budget_min) * 100), // £ → pence
         budgetMax: Math.round(parseFloat(formData.budget_max) * 100),
+        location: formData.location.trim() || undefined,
         skills: formData.skills
           .split(',')
           .map((s) => s.trim())
@@ -182,6 +184,22 @@ export default function PostJobPage() {
                 placeholder="Describe your project in detail. Include requirements, timeline, and any specific technologies or skills needed..."
               />
               <p className="text-sm text-gray-500 mt-1">The more details you provide, the better proposals you'll receive</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Area / Location *
+              </label>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleInputChange}
+                required
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                placeholder="e.g. Crawley, West Sussex"
+              />
+              <p className="text-sm text-gray-500 mt-1">Where the work needs doing</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
