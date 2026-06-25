@@ -180,3 +180,70 @@ export const complete = mutation({
     await ctx.db.patch(jobId, { status: "completed" });
   },
 });
+
+// Edit an OPEN job (owner only). Once a job is closed/completed it's locked.
+export const update = mutation({
+  args: {
+    jobId: v.id("jobs"),
+    title: v.string(),
+    description: v.string(),
+    location: v.optional(v.string()),
+    budgetMin: v.number(),
+    budgetMax: v.number(),
+    skills: v.optional(v.array(v.string())),
+    deadline: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (userId === null) throw new Error("Not authenticated");
+    const job = await ctx.db.get(args.jobId);
+    if (!job) throw new Error("Job not found");
+    if (job.clientId !== userId) throw new Error("Not your job");
+    if (job.status !== "open") {
+      throw new Error("Only open jobs can be edited");
+    }
+    const { jobId, ...fields } = args;
+    await ctx.db.patch(jobId, fields);
+  },
+});
+
+// Delete/cancel a job (owner only). Removes the job and any bids on it.
+// Refunds the 5-credit posting cost ONLY if no one has bid yet — otherwise a
+// client could post, read proposals, delete for a refund, and repost for free.
+export const remove = mutation({
+  args: { jobId: v.id("jobs") },
+  handler: async (ctx, { jobId }) => {
+    const userId = await getAuthUserId(ctx);
+    if (userId === null) throw new Error("Not authenticated");
+    const job = await ctx.db.get(jobId);
+    if (!job) throw new Error("Job not found");
+    if (job.clientId !== userId) throw new Error("Not your job");
+
+    const refundEligible = job.currentBids === 0;
+
+    // Remove any bids attached to the job first (avoid orphans).
+    const bids = await ctx.db
+      .query("bids")
+      .withIndex("by_job", (q) => q.eq("jobId", jobId))
+      .collect();
+    for (const b of bids) await ctx.db.delete(b._id);
+
+    await ctx.db.delete(jobId);
+
+    if (refundEligible) {
+      const user = await ctx.db.get(userId);
+      if (user) {
+        await ctx.db.patch(userId, {
+          credits: (user.credits ?? 0) + job.costCredits,
+        });
+        // No jobId on the ledger row — the job no longer exists.
+        await ctx.db.insert("creditTransactions", {
+          userId,
+          amount: job.costCredits,
+          reason: "refund",
+        });
+      }
+    }
+    return { refunded: refundEligible ? job.costCredits : 0 };
+  },
+});

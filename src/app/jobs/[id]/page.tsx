@@ -19,11 +19,31 @@ export default function JobDetailPage() {
   const bids = useQuery(api.bids.listByJobWithUser, { jobId })
   const user = useCurrentUser()
   const createBid = useMutation(api.bids.create)
+  const removeJob = useMutation(api.jobs.remove)
 
   const [bidAmount, setBidAmount] = useState('')
   const [bidMessage, setBidMessage] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [message, setMessage] = useState('')
+  const [deleting, setDeleting] = useState(false)
+
+  async function handleDelete() {
+    if (!job) return
+    const willRefund = job.currentBids === 0
+    const msg = willRefund
+      ? 'Delete this job? No one has bid yet, so your 5 credits will be refunded.'
+      : 'Delete this job? It has bids, so the 5 credits will NOT be refunded.'
+    if (!window.confirm(msg)) return
+    setDeleting(true)
+    try {
+      const res = await removeJob({ jobId })
+      router.push('/my-jobs')
+      void res
+    } catch (error: unknown) {
+      setMessage(error instanceof Error ? error.message : 'Failed to delete job')
+      setDeleting(false)
+    }
+  }
 
   async function submitBid(e: React.FormEvent) {
     e.preventDefault()
@@ -143,6 +163,34 @@ export default function JobDetailPage() {
                   {job.status}
                 </span>
               </div>
+
+              {/* Owner controls */}
+              {user && job.clientId === user._id && (
+                <div className="flex items-center gap-3 mb-6 pb-6 border-b border-gray-100">
+                  {job.status === 'open' && (
+                    <Link
+                      href={`/jobs/${jobId}/edit`}
+                      className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                      ✏️ Edit Job
+                    </Link>
+                  )}
+                  <button
+                    onClick={handleDelete}
+                    disabled={deleting}
+                    className="inline-flex items-center px-4 py-2 border border-red-200 text-red-600 text-sm font-medium rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50"
+                  >
+                    {deleting ? 'Deleting…' : '🗑 Delete Job'}
+                  </button>
+                  {job.status === 'open' && (
+                    <span className="text-xs text-gray-500">
+                      {job.currentBids === 0
+                        ? 'Delete now → 5 credits refunded'
+                        : 'Has bids → no refund on delete'}
+                    </span>
+                  )}
+                </div>
+              )}
 
               <div className="prose max-w-none">
                 <h3 className="text-lg font-semibold mb-3">Project Description</h3>
