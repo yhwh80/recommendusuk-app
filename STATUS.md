@@ -67,8 +67,11 @@ whereas our schema uses `budgetMin`/`budgetMax` (pence) + `categoryId`. We kept 
 richer freelance-marketplace model — no change needed, just noting the divergence.
 
 ### Still open
-- [ ] New pages are green-themed, but core inner pages (auth/dashboards/jobs/post-job)
-      are still BLUE — full green restyle still pending.
+- [x] **Full green restyle done (2026-06-25)** — converted all 9 blue/purple/indigo
+      inner pages (auth, both dashboards, jobs, job detail, post-job, buy-credits +
+      success, dashboard redirect) to green. Brand gradient → `from-green-500 to-green-400`,
+      primary buttons `bg-green-600`, focus rings `green-500`; status badges (green/
+      yellow/red/gray) left intact. Whole app is now cohesively green.
 - [ ] **Email verification on signup (LATER).** Currently signup accepts any email,
       unverified. Convex Auth Password supports built-in email verification — wire a
       verification provider using **Resend** (SGP already uses Resend for outbound,

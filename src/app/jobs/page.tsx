@@ -29,7 +29,7 @@ export default function JobsPage() {
   if (jobs === undefined) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
       </div>
     )
   }
@@ -42,7 +42,7 @@ export default function JobsPage() {
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <Link href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-green-400 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold">R</span>
                 </div>
                 <span className="text-lg font-bold text-gray-800">RecommendUsUK</span>
@@ -52,10 +52,10 @@ export default function JobsPage() {
             </div>
 
             <div className="flex items-center space-x-4">
-              <Link href="/auth" className="text-gray-600 hover:text-blue-600 font-medium">
+              <Link href="/auth" className="text-gray-600 hover:text-green-600 font-medium">
                 Sign in
               </Link>
-              <Link href="/auth?signup=true" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              <Link href="/auth?signup=true" className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
                 Join now
               </Link>
             </div>
@@ -79,7 +79,7 @@ export default function JobsPage() {
                 onClick={() => setFilter('all')}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   filter === 'all'
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-green-600 text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
@@ -163,7 +163,7 @@ export default function JobsPage() {
 
                     <Link
                       href={`/jobs/${job._id}`}
-                      className="inline-flex items-center px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                      className="inline-flex items-center px-6 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
                     >
                       View Details →
                     </Link>
@@ -175,12 +175,12 @@ export default function JobsPage() {
         )}
 
         {/* CTA for non-users */}
-        <div className="mt-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-8 text-center text-white">
+        <div className="mt-12 bg-gradient-to-r from-green-500 to-green-400 rounded-lg p-8 text-center text-white">
           <h3 className="text-2xl font-bold mb-2">Ready to start bidding?</h3>
-          <p className="text-blue-100 mb-6">Join RecommendUsUK and get 10 free credits to submit your first proposals</p>
+          <p className="text-green-100 mb-6">Join RecommendUsUK and get 10 free credits to submit your first proposals</p>
           <Link
             href="/auth?type=freelancer"
-            className="inline-flex items-center px-8 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors"
+            className="inline-flex items-center px-8 py-3 bg-white text-green-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors"
           >
             Join as Freelancer
           </Link>

@@ -81,7 +81,7 @@ export default function PostJobPage() {
   if (isLoading || user === undefined) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
       </div>
     )
   }
@@ -100,7 +100,7 @@ export default function PostJobPage() {
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <Link href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-green-400 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold">R</span>
                 </div>
                 <span className="text-lg font-bold text-gray-800">RecommendUsUK</span>
@@ -110,7 +110,7 @@ export default function PostJobPage() {
             </div>
 
             <div className="flex items-center space-x-4">
-              <Link href="/dashboard/client" className="text-gray-600 hover:text-blue-600 font-medium">
+              <Link href="/dashboard/client" className="text-gray-600 hover:text-green-600 font-medium">
                 Dashboard
               </Link>
               <div className="text-sm text-gray-600">
@@ -142,8 +142,8 @@ export default function PostJobPage() {
             </div>
           </div>
         ) : (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <div className="flex items-center text-blue-800">
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center text-green-800">
               <span className="text-xl mr-2">💰</span>
               <span>Posting this job will cost <strong>5 credits</strong>. You have <strong>{credits} credits</strong> available.</span>
             </div>
@@ -162,7 +162,7 @@ export default function PostJobPage() {
                 value={formData.title}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="e.g. Build a WordPress website for my business"
               />
               <p className="text-sm text-gray-500 mt-1">Be specific and descriptive</p>
@@ -178,7 +178,7 @@ export default function PostJobPage() {
                 onChange={handleInputChange}
                 required
                 rows={6}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="Describe your project in detail. Include requirements, timeline, and any specific technologies or skills needed..."
               />
               <p className="text-sm text-gray-500 mt-1">The more details you provide, the better proposals you'll receive</p>
@@ -197,7 +197,7 @@ export default function PostJobPage() {
                   required
                   min="1"
                   step="0.01"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   placeholder="100.00"
                 />
               </div>
@@ -214,7 +214,7 @@ export default function PostJobPage() {
                   required
                   min="1"
                   step="0.01"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   placeholder="500.00"
                 />
               </div>
@@ -230,7 +230,7 @@ export default function PostJobPage() {
                   name="skills"
                   value={formData.skills}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   placeholder="React, Plumbing, Logo Design"
                 />
                 <p className="text-sm text-gray-500 mt-1">Comma-separated (optional)</p>
@@ -245,7 +245,7 @@ export default function PostJobPage() {
                   name="deadline"
                   value={formData.deadline}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
                 <p className="text-sm text-gray-500 mt-1">When you need it done (optional)</p>
               </div>
@@ -295,7 +295,7 @@ export default function PostJobPage() {
               <button
                 type="submit"
                 disabled={submitting || credits < 5}
-                className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {submitting ? 'Posting Job...' : 'Post Job (5 Credits)'}
               </button>

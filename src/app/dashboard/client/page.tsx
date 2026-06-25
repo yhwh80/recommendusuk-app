@@ -27,7 +27,7 @@ export default function ClientDashboard() {
   if (isLoading || user === undefined || jobs === undefined) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
       </div>
     )
   }
@@ -48,7 +48,7 @@ export default function ClientDashboard() {
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <Link href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-green-400 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold">R</span>
                 </div>
                 <span className="text-lg font-bold text-gray-800">RecommendUsUK</span>
@@ -58,10 +58,10 @@ export default function ClientDashboard() {
             </div>
 
             <div className="flex items-center space-x-4">
-              <Link href="/my-jobs" className="text-gray-600 hover:text-blue-600 font-medium">
+              <Link href="/my-jobs" className="text-gray-600 hover:text-green-600 font-medium">
                 My Jobs
               </Link>
-              <Link href="/freelancers" className="text-gray-600 hover:text-blue-600 font-medium">
+              <Link href="/freelancers" className="text-gray-600 hover:text-green-600 font-medium">
                 Browse Freelancers
               </Link>
               <div className="flex items-center space-x-2 text-sm text-gray-600">
@@ -103,7 +103,7 @@ export default function ClientDashboard() {
 
           <div className="bg-white p-6 rounded-xl shadow-sm border">
             <div className="flex items-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <span className="text-2xl">📋</span>
               </div>
               <div className="ml-4">
@@ -115,7 +115,7 @@ export default function ClientDashboard() {
 
           <div className="bg-white p-6 rounded-xl shadow-sm border">
             <div className="flex items-center">
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <span className="text-2xl">✅</span>
               </div>
               <div className="ml-4">
@@ -144,9 +144,9 @@ export default function ClientDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link
               href="/post-job"
-              className="flex items-center p-4 border-2 border-dashed border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all group"
+              className="flex items-center p-4 border-2 border-dashed border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-all group"
             >
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
                 <span className="text-2xl">📝</span>
               </div>
               <div className="ml-4">
@@ -157,9 +157,9 @@ export default function ClientDashboard() {
 
             <Link
               href="/freelancers"
-              className="flex items-center p-4 border-2 border-dashed border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-all group"
+              className="flex items-center p-4 border-2 border-dashed border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-all group"
             >
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
                 <span className="text-2xl">🔍</span>
               </div>
               <div className="ml-4">
@@ -187,7 +187,7 @@ export default function ClientDashboard() {
         <div className="bg-white rounded-xl shadow-sm border p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-900">Your Jobs</h2>
-            <Link href="/post-job" className="text-blue-600 hover:text-blue-800 font-medium">
+            <Link href="/post-job" className="text-green-600 hover:text-green-800 font-medium">
               Post New Job →
             </Link>
           </div>
@@ -199,7 +199,7 @@ export default function ClientDashboard() {
               <p className="text-gray-600 mb-6">Start by posting your first job to find the perfect freelancer</p>
               <Link
                 href="/post-job"
-                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
               >
                 Post Your First Job
               </Link>
@@ -228,7 +228,7 @@ export default function ClientDashboard() {
                     </div>
                     <Link
                       href={`/jobs/${job._id}`}
-                      className="ml-4 text-blue-600 hover:text-blue-800 font-medium text-sm"
+                      className="ml-4 text-green-600 hover:text-green-800 font-medium text-sm"
                     >
                       View →
                     </Link>

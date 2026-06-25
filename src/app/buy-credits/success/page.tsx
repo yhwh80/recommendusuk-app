@@ -22,7 +22,7 @@ function PaymentSuccessInner() {
   if (isLoading || user === undefined) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
       </div>
     )
   }
@@ -41,7 +41,7 @@ function PaymentSuccessInner() {
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <Link href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-green-400 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold">R</span>
                 </div>
                 <span className="text-lg font-bold text-gray-800">RecommendUsUK</span>
@@ -51,7 +51,7 @@ function PaymentSuccessInner() {
             </div>
 
             <div className="flex items-center space-x-4">
-              <Link href={`/dashboard/${user.role === 'client' ? 'client' : 'freelancer'}`} className="text-gray-600 hover:text-blue-600 font-medium">
+              <Link href={`/dashboard/${user.role === 'client' ? 'client' : 'freelancer'}`} className="text-gray-600 hover:text-green-600 font-medium">
                 Dashboard
               </Link>
               <div className="text-sm text-gray-600">
@@ -82,7 +82,7 @@ function PaymentSuccessInner() {
           {/* Current Credits */}
           <div className="bg-white rounded-lg shadow-sm border p-8 mb-8 max-w-md mx-auto">
             <div className="text-center">
-              <div className="text-4xl font-bold text-blue-600 mb-2">
+              <div className="text-4xl font-bold text-green-600 mb-2">
                 {user.credits}
               </div>
               <div className="text-gray-600">
@@ -98,7 +98,7 @@ function PaymentSuccessInner() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/post-job"
-              className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              className="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
             >
               Post a Job
             </Link>
@@ -110,7 +110,7 @@ function PaymentSuccessInner() {
             </Link>
             <Link
               href="/buy-credits"
-              className="text-blue-600 hover:text-blue-800 font-medium px-8 py-3"
+              className="text-green-600 hover:text-green-800 font-medium px-8 py-3"
             >
               Buy More Credits
             </Link>
@@ -138,7 +138,7 @@ export default function PaymentSuccessPage() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
         </div>
       }
     >

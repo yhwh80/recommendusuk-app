@@ -63,7 +63,7 @@ export default function BuyCreditsPage() {
   if (isLoading || user === undefined) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
       </div>
     )
   }
@@ -80,7 +80,7 @@ export default function BuyCreditsPage() {
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <Link href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-green-400 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold">R</span>
                 </div>
                 <span className="text-lg font-bold text-gray-800">RecommendUsUK</span>
@@ -90,7 +90,7 @@ export default function BuyCreditsPage() {
             </div>
 
             <div className="flex items-center space-x-4">
-              <Link href={`/dashboard/${user.role === 'client' ? 'client' : 'freelancer'}`} className="text-gray-600 hover:text-blue-600 font-medium">
+              <Link href={`/dashboard/${user.role === 'client' ? 'client' : 'freelancer'}`} className="text-gray-600 hover:text-green-600 font-medium">
                 Dashboard
               </Link>
               <div className="text-sm text-gray-600">
@@ -108,7 +108,7 @@ export default function BuyCreditsPage() {
             Choose the perfect credit package for your needs
           </p>
           <p className="text-gray-500">
-            You currently have <span className="font-semibold text-blue-600">{user.credits} credits</span>
+            You currently have <span className="font-semibold text-green-600">{user.credits} credits</span>
           </p>
         </div>
 
@@ -116,20 +116,20 @@ export default function BuyCreditsPage() {
         <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">How Credits Work</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
+            <div className="text-center p-4 bg-green-50 rounded-lg">
               <div className="text-2xl mb-2">📝</div>
-              <div className="font-semibold text-blue-900">Post a Job</div>
-              <div className="text-sm text-blue-700">5 credits</div>
+              <div className="font-semibold text-green-900">Post a Job</div>
+              <div className="text-sm text-green-700">5 credits</div>
             </div>
             <div className="text-center p-4 bg-green-50 rounded-lg">
               <div className="text-2xl mb-2">🎯</div>
               <div className="font-semibold text-green-900">Get 3 Proposals</div>
               <div className="text-sm text-green-700">Included with job post</div>
             </div>
-            <div className="text-center p-4 bg-purple-50 rounded-lg">
+            <div className="text-center p-4 bg-green-50 rounded-lg">
               <div className="text-2xl mb-2">🎁</div>
-              <div className="font-semibold text-purple-900">Free Credits</div>
-              <div className="text-sm text-purple-700">25 for clients, 10 for freelancers</div>
+              <div className="font-semibold text-green-900">Free Credits</div>
+              <div className="text-sm text-green-700">25 for clients, 10 for freelancers</div>
             </div>
             <div className="text-center p-4 bg-yellow-50 rounded-lg">
               <div className="text-2xl mb-2">💰</div>
@@ -146,13 +146,13 @@ export default function BuyCreditsPage() {
               key={pkg.id}
               className={`relative bg-white rounded-xl border-2 p-6 transition-all hover:shadow-lg ${
                 pkg.popular
-                  ? 'border-blue-500 shadow-lg'
-                  : 'border-gray-200 hover:border-blue-300'
+                  ? 'border-green-500 shadow-lg'
+                  : 'border-gray-200 hover:border-green-300'
               }`}
             >
               {pkg.popular && (
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-medium">
+                  <span className="bg-green-500 text-white px-4 py-1 rounded-full text-sm font-medium">
                     Most Popular
                   </span>
                 </div>
@@ -160,7 +160,7 @@ export default function BuyCreditsPage() {
 
               <div className="text-center">
                 <h3 className="text-xl font-bold text-gray-900 mb-2">{pkg.name}</h3>
-                <div className="text-3xl font-bold text-blue-600 mb-1">
+                <div className="text-3xl font-bold text-green-600 mb-1">
                   £{pkg.price.toFixed(2)}
                 </div>
                 <div className="text-sm text-gray-600 mb-4">
@@ -189,7 +189,7 @@ export default function BuyCreditsPage() {
                   disabled={processingPackage === pkg.id}
                   className={`w-full py-3 rounded-lg font-semibold transition-colors ${
                     pkg.popular
-                      ? 'bg-blue-600 text-white hover:bg-blue-700'
+                      ? 'bg-green-600 text-white hover:bg-green-700'
                       : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >

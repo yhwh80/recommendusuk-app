@@ -61,7 +61,7 @@ export default function JobDetailPage() {
   if (job === undefined || bids === undefined) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
       </div>
     )
   }
@@ -71,7 +71,7 @@ export default function JobDetailPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Job not found</h1>
-          <Link href="/jobs" className="text-blue-600 hover:text-blue-800">← Back to jobs</Link>
+          <Link href="/jobs" className="text-green-600 hover:text-green-800">← Back to jobs</Link>
         </div>
       </div>
     )
@@ -89,28 +89,28 @@ export default function JobDetailPage() {
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <Link href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-green-400 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold">R</span>
                 </div>
                 <span className="text-lg font-bold text-gray-800">RecommendUsUK</span>
               </Link>
               <span className="text-gray-400">|</span>
-              <Link href="/jobs" className="text-gray-600 hover:text-blue-600">Browse Jobs</Link>
+              <Link href="/jobs" className="text-gray-600 hover:text-green-600">Browse Jobs</Link>
               <span className="text-gray-400">|</span>
               <span className="font-medium text-gray-600">Job Details</span>
             </div>
 
             <div className="flex items-center space-x-4">
               {user ? (
-                <Link href={`/dashboard/${user.role === 'client' ? 'client' : 'freelancer'}`} className="text-gray-600 hover:text-blue-600 font-medium">
+                <Link href={`/dashboard/${user.role === 'client' ? 'client' : 'freelancer'}`} className="text-gray-600 hover:text-green-600 font-medium">
                   Dashboard
                 </Link>
               ) : (
                 <>
-                  <Link href="/auth" className="text-gray-600 hover:text-blue-600 font-medium">
+                  <Link href="/auth" className="text-gray-600 hover:text-green-600 font-medium">
                     Sign in
                   </Link>
-                  <Link href="/auth?signup=true" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                  <Link href="/auth?signup=true" className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
                     Join now
                   </Link>
                 </>
@@ -170,13 +170,13 @@ export default function JobDetailPage() {
                   <div className="text-sm text-gray-600">Budget Range</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">
+                  <div className="text-2xl font-bold text-green-600">
                     {job.currentBids}/{job.maxBids}
                   </div>
                   <div className="text-sm text-gray-600">Proposals</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-600">
+                  <div className="text-2xl font-bold text-green-600">
                     {job.costCredits}
                   </div>
                   <div className="text-sm text-gray-600">Credits Cost</div>
@@ -253,7 +253,7 @@ export default function JobDetailPage() {
                         min="1"
                         step="0.01"
                         required
-                        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                         placeholder="Enter your bid amount"
                       />
                     </div>
@@ -267,7 +267,7 @@ export default function JobDetailPage() {
                         onChange={(e) => setBidMessage(e.target.value)}
                         required
                         rows={4}
-                        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                         placeholder="Explain why you're the best choice for this project..."
                       />
                     </div>
@@ -285,7 +285,7 @@ export default function JobDetailPage() {
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
+                      className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:opacity-50"
                     >
                       {submitting ? 'Submitting...' : 'Submit Proposal'}
                     </button>
@@ -294,12 +294,12 @@ export default function JobDetailPage() {
               ) : userBid ? (
                 <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
                   <h3 className="text-lg font-bold text-gray-900 mb-4">Your Proposal</h3>
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <div className="font-semibold text-blue-900 mb-2">
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div className="font-semibold text-green-900 mb-2">
                       £{(userBid.amount / 100).toLocaleString()}
                     </div>
-                    <p className="text-blue-700 text-sm">{userBid.message}</p>
-                    <div className="mt-2 text-xs text-blue-600">
+                    <p className="text-green-700 text-sm">{userBid.message}</p>
+                    <div className="mt-2 text-xs text-green-600">
                       Status: {userBid.status}
                     </div>
                   </div>
@@ -322,7 +322,7 @@ export default function JobDetailPage() {
                 </p>
                 <Link
                   href="/auth?type=freelancer"
-                  className="block w-full bg-blue-600 text-white text-center py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                  className="block w-full bg-green-600 text-white text-center py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
                 >
                   Join as Freelancer
                 </Link>

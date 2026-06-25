@@ -33,7 +33,7 @@ export default function FreelancerDashboard() {
   ) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
       </div>
     )
   }
@@ -53,7 +53,7 @@ export default function FreelancerDashboard() {
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <Link href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-green-400 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold">R</span>
                 </div>
                 <span className="text-lg font-bold text-gray-800">RecommendUsUK</span>
@@ -63,7 +63,7 @@ export default function FreelancerDashboard() {
             </div>
 
             <div className="flex items-center space-x-4">
-              <Link href="/jobs" className="text-gray-600 hover:text-purple-600 font-medium">
+              <Link href="/jobs" className="text-gray-600 hover:text-green-600 font-medium">
                 Browse Jobs
               </Link>
               <div className="flex items-center space-x-2 text-sm text-gray-600">
@@ -93,7 +93,7 @@ export default function FreelancerDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white p-6 rounded-xl shadow-sm border">
             <div className="flex items-center">
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <span className="text-2xl">💳</span>
               </div>
               <div className="ml-4">
@@ -105,7 +105,7 @@ export default function FreelancerDashboard() {
 
           <div className="bg-white p-6 rounded-xl shadow-sm border">
             <div className="flex items-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <span className="text-2xl">📋</span>
               </div>
               <div className="ml-4">
@@ -146,9 +146,9 @@ export default function FreelancerDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link
               href="/jobs"
-              className="flex items-center p-4 border-2 border-dashed border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-all group"
+              className="flex items-center p-4 border-2 border-dashed border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-all group"
             >
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
                 <span className="text-2xl">🔍</span>
               </div>
               <div className="ml-4">
@@ -159,9 +159,9 @@ export default function FreelancerDashboard() {
 
             <Link
               href="/profile"
-              className="flex items-center p-4 border-2 border-dashed border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all group"
+              className="flex items-center p-4 border-2 border-dashed border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-all group"
             >
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
                 <span className="text-2xl">👤</span>
               </div>
               <div className="ml-4">
@@ -190,7 +190,7 @@ export default function FreelancerDashboard() {
           <div className="bg-white rounded-xl shadow-sm border p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-gray-900">Latest Jobs</h2>
-              <Link href="/jobs" className="text-purple-600 hover:text-purple-800 font-medium">
+              <Link href="/jobs" className="text-green-600 hover:text-green-800 font-medium">
                 View All →
               </Link>
             </div>
@@ -214,7 +214,7 @@ export default function FreelancerDashboard() {
                       </div>
                       <Link
                         href={`/jobs/${job._id}`}
-                        className="text-purple-600 hover:text-purple-800 font-medium text-sm"
+                        className="text-green-600 hover:text-green-800 font-medium text-sm"
                       >
                         View & Bid →
                       </Link>
@@ -229,7 +229,7 @@ export default function FreelancerDashboard() {
           <div className="bg-white rounded-xl shadow-sm border p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-gray-900">My Recent Proposals</h2>
-              <Link href="/my-bids" className="text-purple-600 hover:text-purple-800 font-medium">
+              <Link href="/my-bids" className="text-green-600 hover:text-green-800 font-medium">
                 View All →
               </Link>
             </div>
@@ -240,7 +240,7 @@ export default function FreelancerDashboard() {
                 <p className="text-gray-600 mb-4">No proposals submitted yet</p>
                 <Link
                   href="/jobs"
-                  className="inline-flex items-center px-4 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors"
+                  className="inline-flex items-center px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
                 >
                   Browse Jobs
                 </Link>
