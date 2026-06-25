@@ -109,7 +109,6 @@ export default function FreelancerDashboard() {
               <button onClick={handleSignOut} className="text-left px-2 py-2 rounded hover:bg-green-50 text-gray-500">Sign out</button>
             </div>
           )}
-          </div>
         </div>
       </header>
 
