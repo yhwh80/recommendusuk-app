@@ -2,13 +2,25 @@
 
 _Last updated: 2026-06-18_
 
-## Pick up here (last session: 2026-06-19)
+## Pick up here (last session: 2026-06-25)
 
-Parity features built (freelancers, profiles, my-bids, my-jobs, skills/deadline) and
-the dark-mode form-text contrast bug fixed. SGP signed up a real freelancer account
-and was mid-way through testing a job post. Git: 3 commits, **not yet pushed to GitHub**.
-Next likely: (a) full green restyle of the blue inner pages, (b) GitHub push + Coolify
-deploy, (c) email verification via Resend. See "Still open" + deployment sections below.
+**LIVE in production** at https://recommendusjobsuk.com (Coolify on VPS 72.62.133.181,
+prod Convex `fearless-newt-271`, repo github.com/yhwh80/recommendusuk-app PUBLIC).
+
+Done this session: green restyle, Area/Location on jobs, edit+delete jobs (refund only
+if no bids), accept proposal + freelancer-profile links, complete→review loop (reviews
+show on profile), and **1:1 messaging** (inbox, threads, unread badges; entry points on
+profile/job/dashboards). Plus mobile hamburger on dashboard headers.
+
+**NEXT SESSION — start here:** build **🔔 notifications** (idea #2) — a notifications
+table + 🔔 feed, triggered on bid-accepted / new review / job-complete; later email via
+Resend. Then #3 search/filter (jobs by area+skill, wire categories), then #4 smaller
+(profile photo upload, edit/withdraw bid, earnings stat).
+
+⚠️ Deploy note: auto-deploy via Coolify GitHub App was being set up by SGP's browser
+agent (Comet) — confirm it's connected. If yes, pushes deploy automatically; if not,
+click Deploy in Coolify after each push. Backend changes (`npx convex deploy -y`) go
+live instantly regardless; only FRONTEND needs the Coolify rebuild.
 
 ## Where we are ✅
 
