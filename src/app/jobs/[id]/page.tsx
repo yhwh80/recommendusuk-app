@@ -20,6 +20,18 @@ export default function JobDetailPage() {
   const user = useCurrentUser()
   const createBid = useMutation(api.bids.create)
   const removeJob = useMutation(api.jobs.remove)
+  const acceptBid = useMutation(api.jobs.acceptBid)
+
+  async function handleAccept(bidId: Id<'bids'>, proName: string | null) {
+    if (!window.confirm(`Accept ${proName || 'this freelancer'}'s proposal? This closes the job to further bids.`)) {
+      return
+    }
+    try {
+      await acceptBid({ jobId, bidId })
+    } catch (error: unknown) {
+      setMessage(error instanceof Error ? error.message : 'Failed to accept proposal')
+    }
+  }
 
   const [bidAmount, setBidAmount] = useState('')
   const [bidMessage, setBidMessage] = useState('')
@@ -245,17 +257,31 @@ export default function JobDetailPage() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {bids.map((bid) => (
-                    <div key={bid._id} className="border border-gray-200 rounded-lg p-4">
+                  {bids.map((bid) => {
+                    const isOwner = user && job.clientId === user._id
+                    return (
+                    <div
+                      key={bid._id}
+                      className={`border rounded-lg p-4 ${
+                        bid.status === 'accepted'
+                          ? 'border-green-400 bg-green-50'
+                          : 'border-gray-200'
+                      }`}
+                    >
                       <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                            <span className="text-gray-600 font-medium">
-                              {bid.professionalName?.charAt(0) || 'U'}
+                        <Link
+                          href={`/profile/${bid.professionalId}`}
+                          className="flex items-center space-x-3 group"
+                        >
+                          <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-green-200 rounded-full flex items-center justify-center">
+                            <span className="text-white font-medium">
+                              {bid.professionalName?.charAt(0)?.toUpperCase() || 'U'}
                             </span>
                           </div>
                           <div>
-                            <div className="font-semibold text-gray-900">{bid.professionalName || 'Freelancer'}</div>
+                            <div className="font-semibold text-gray-900 group-hover:text-green-600">
+                              {bid.professionalName || 'Freelancer'} <span className="text-xs text-gray-400">· view profile</span>
+                            </div>
                             <div className="flex items-center space-x-2 text-sm text-gray-500">
                               <span>⭐ {bid.professionalRating.toFixed(1)}</span>
                               {bid.professionalRecommended && (
@@ -263,7 +289,7 @@ export default function JobDetailPage() {
                               )}
                             </div>
                           </div>
-                        </div>
+                        </Link>
                         <div className="text-right">
                           <div className="text-lg font-bold text-green-600">
                             £{(bid.amount / 100).toLocaleString()}
@@ -274,8 +300,35 @@ export default function JobDetailPage() {
                         </div>
                       </div>
                       <p className="text-gray-700">{bid.message}</p>
+
+                      {/* Status + accept (owner only) */}
+                      <div className="mt-3 flex items-center justify-between">
+                        <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
+                          bid.status === 'accepted' ? 'bg-green-100 text-green-800' :
+                          bid.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                          'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {bid.status}
+                        </span>
+                        {isOwner && job.status === 'open' && bid.status === 'pending' && (
+                          <button
+                            onClick={() => handleAccept(bid._id, bid.professionalName)}
+                            className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
+                          >
+                            ✓ Accept Proposal
+                          </button>
+                        )}
+                        {bid.status === 'accepted' && (
+                          <Link
+                            href={`/profile/${bid.professionalId}`}
+                            className="text-sm text-green-700 font-medium hover:underline"
+                          >
+                            View hired freelancer →
+                          </Link>
+                        )}
+                      </div>
                     </div>
-                  ))}
+                  )})}
                 </div>
               )}
             </div>
