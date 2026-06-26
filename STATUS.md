@@ -12,10 +12,14 @@ if no bids), accept proposal + freelancer-profile links, complete→review loop 
 show on profile), and **1:1 messaging** (inbox, threads, unread badges; entry points on
 profile/job/dashboards). Plus mobile hamburger on dashboard headers.
 
-**NEXT SESSION — start here:** build **🔔 notifications** (idea #2) — a notifications
-table + 🔔 feed, triggered on bid-accepted / new review / job-complete; later email via
-Resend. Then #3 search/filter (jobs by area+skill, wire categories), then #4 smaller
-(profile photo upload, edit/withdraw bid, earnings stat).
+**NEXT SESSION — start here:** build **🔎 search/filter** (idea #3) — filter jobs by
+area + skill, and wire up the categories table (picker on post-job + filter on browse).
+Then #4 smaller batch (profile photo upload, edit/withdraw a bid, earnings stat). Later:
+email notifications via Resend (the notify() helper is the hook point).
+
+DONE 2026-06-26: **🔔 notifications (#2)** — notifications table + notify() helper,
+triggers on bid-accepted/new-bid/new-review/job-completed, /notifications page, 🔔 bell
+w/ unread badge in both dashboards. Also finished client dashboard mobile hamburger.
 
 ⚠️ Deploy note: auto-deploy via Coolify GitHub App was being set up by SGP's browser
 agent (Comet) — confirm it's connected. If yes, pushes deploy automatically; if not,
