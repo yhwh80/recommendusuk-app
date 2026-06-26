@@ -12,10 +12,16 @@ if no bids), accept proposal + freelancer-profile links, complete→review loop 
 show on profile), and **1:1 messaging** (inbox, threads, unread badges; entry points on
 profile/job/dashboards). Plus mobile hamburger on dashboard headers.
 
-**NEXT SESSION — start here:** build **🔎 search/filter** (idea #3) — filter jobs by
-area + skill, and wire up the categories table (picker on post-job + filter on browse).
-Then #4 smaller batch (profile photo upload, edit/withdraw a bid, earnings stat). Later:
-email notifications via Resend (the notify() helper is the hook point).
+**NEXT SESSION — start here:** **#4 smaller batch** — profile photo upload (Convex file
+storage; avatars are initials now), edit/withdraw a bid (freelancer side), earnings stat
+on freelancer dashboard. THEN the **email layer** (pre-launch): email verification on
+signup + email notifications via Resend — `notify()` in convex/notifications.ts is the
+hook point; put RESEND_API_KEY in Convex env. SGP's call: do the email layer right before
+inviting real users, not during solo testing.
+
+DONE 2026-06-26: **#3 search/filter + categories** — browse page keyword search + Area +
+Skill + Category filters + open-only + clear; categories wired (picker on post-job, badges
+on cards/detail, listWithClient resolves categoryName); 6 categories seeded on prod.
 
 DONE 2026-06-26: **🔔 notifications (#2)** — notifications table + notify() helper,
 triggers on bid-accepted/new-bid/new-review/job-completed, /notifications page, 🔔 bell
