@@ -1,5 +1,27 @@
 import { internalMutation } from "./_generated/server";
 
+// Categories only — safe for production (no demo users/jobs). Idempotent.
+//   npx convex run seed:categoriesOnly --prod
+export const categoriesOnly = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const existing = await ctx.db.query("categories").first();
+    if (existing) return "Categories already exist — skipping.";
+    const CATEGORIES = [
+      ["Home & Garden", "home-garden", "Cleaning, gardening, handyman, decorating"],
+      ["Trades", "trades", "Plumbing, electrical, building, roofing"],
+      ["Digital & Creative", "digital-creative", "Web, design, video, marketing"],
+      ["Business Services", "business-services", "Admin, bookkeeping, consulting"],
+      ["Events", "events", "Photography, catering, entertainment"],
+      ["Tuition & Lessons", "tuition-lessons", "Driving, music, academic tutoring"],
+    ] as const;
+    for (const [name, slug, description] of CATEGORIES) {
+      await ctx.db.insert("categories", { name, slug, description });
+    }
+    return `Seeded ${CATEGORIES.length} categories.`;
+  },
+});
+
 // Wipes demo + reference data (NOT real auth users). Run with:
 //   npx convex run seed:reset
 // Then re-seed with seed:run.

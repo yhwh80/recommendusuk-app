@@ -3,14 +3,16 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { useConvexAuth, useMutation } from 'convex/react'
+import { useConvexAuth, useMutation, useQuery } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
+import { Id } from '../../../convex/_generated/dataModel'
 import { useCurrentUser } from '@/lib/useCurrentUser'
 
 export default function PostJobPage() {
   const { isLoading, isAuthenticated } = useConvexAuth()
   const user = useCurrentUser()
   const createJob = useMutation(api.jobs.create)
+  const categories = useQuery(api.categories.list)
   const router = useRouter()
 
   const [submitting, setSubmitting] = useState(false)
@@ -18,6 +20,7 @@ export default function PostJobPage() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
+    category: '',
     budget_min: '',
     budget_max: '',
     location: '',
@@ -52,6 +55,9 @@ export default function PostJobPage() {
       const jobId = await createJob({
         title: formData.title,
         description: formData.description,
+        categoryId: formData.category
+          ? (formData.category as Id<'categories'>)
+          : undefined,
         budgetMin: Math.round(parseFloat(formData.budget_min) * 100), // £ → pence
         budgetMax: Math.round(parseFloat(formData.budget_max) * 100),
         location: formData.location.trim() || undefined,
@@ -75,7 +81,9 @@ export default function PostJobPage() {
   }
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
@@ -184,6 +192,23 @@ export default function PostJobPage() {
                 placeholder="Describe your project in detail. Include requirements, timeline, and any specific technologies or skills needed..."
               />
               <p className="text-sm text-gray-500 mt-1">The more details you provide, the better proposals you'll receive</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Category
+              </label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
+              >
+                <option value="">Select a category (optional)</option>
+                {(categories ?? []).map((c) => (
+                  <option key={c._id} value={c._id}>{c.name}</option>
+                ))}
+              </select>
             </div>
 
             <div>

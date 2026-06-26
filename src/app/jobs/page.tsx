@@ -7,7 +7,36 @@ import { api } from '../../../convex/_generated/api'
 
 export default function JobsPage() {
   const [filter, setFilter] = useState<'all' | 'open'>('all')
-  const jobs = useQuery(api.jobs.listWithClient, filter === 'open' ? { status: 'open' } : {})
+  const [search, setSearch] = useState('')
+  const [area, setArea] = useState('')
+  const [skill, setSkill] = useState('')
+  const [categoryId, setCategoryId] = useState('')
+  const allJobs = useQuery(api.jobs.listWithClient, filter === 'open' ? { status: 'open' } : {})
+  const categories = useQuery(api.categories.list)
+
+  // Client-side filtering on the fetched list.
+  const jobs = (allJobs ?? []).filter((job) => {
+    const q = search.trim().toLowerCase()
+    if (q) {
+      const hay = [
+        job.title,
+        job.description,
+        job.location ?? '',
+        (job.skills ?? []).join(' '),
+        job.categoryName ?? '',
+      ].join(' ').toLowerCase()
+      if (!hay.includes(q)) return false
+    }
+    if (area.trim() && !(job.location ?? '').toLowerCase().includes(area.trim().toLowerCase())) {
+      return false
+    }
+    if (skill.trim()) {
+      const s = skill.trim().toLowerCase()
+      if (!(job.skills ?? []).some((sk) => sk.toLowerCase().includes(s))) return false
+    }
+    if (categoryId && job.categoryId !== categoryId) return false
+    return true
+  })
 
   const formatDate = (ts: number) =>
     new Date(ts).toLocaleDateString('en-GB', {
@@ -26,7 +55,7 @@ export default function JobsPage() {
     return formatDate(ts)
   }
 
-  if (jobs === undefined) {
+  if (allJobs === undefined) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
@@ -70,31 +99,73 @@ export default function JobsPage() {
           <p className="text-gray-600">Find the perfect project for your skills</p>
         </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
-          <div className="flex items-center space-x-4">
-            <span className="font-medium text-gray-700">Filter by status:</span>
+        {/* Search + Filters */}
+        <div className="bg-white rounded-lg shadow-sm border p-6 mb-8 space-y-4">
+          {/* Search bar */}
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search jobs by title, description, skill, area…"
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <input
+              type="text"
+              value={area}
+              onChange={(e) => setArea(e.target.value)}
+              placeholder="📍 Area (e.g. Crawley)"
+              className="px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+            <input
+              type="text"
+              value={skill}
+              onChange={(e) => setSkill(e.target.value)}
+              placeholder="🛠 Skill (e.g. Plumbing)"
+              className="px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+            <select
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              className="px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+            >
+              <option value="">All categories</option>
+              {(categories ?? []).map((c) => (
+                <option key={c._id} value={c._id}>{c.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center justify-between flex-wrap gap-3">
             <div className="flex space-x-2">
               <button
                 onClick={() => setFilter('all')}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  filter === 'all'
-                    ? 'bg-green-600 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  filter === 'all' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                All Jobs ({jobs.length})
+                All
               </button>
               <button
                 onClick={() => setFilter('open')}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  filter === 'open'
-                    ? 'bg-green-600 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  filter === 'open' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                Open ({jobs.filter((job) => job.status === 'open').length})
+                Open only
               </button>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-gray-500">{jobs.length} job{jobs.length === 1 ? '' : 's'}</span>
+              {(search || area || skill || categoryId) && (
+                <button
+                  onClick={() => { setSearch(''); setArea(''); setSkill(''); setCategoryId('') }}
+                  className="text-sm text-green-600 hover:underline"
+                >
+                  Clear filters
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -122,6 +193,11 @@ export default function JobsPage() {
                         }`}>
                           {job.status}
                         </span>
+                        {job.categoryName && (
+                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                            {job.categoryName}
+                          </span>
+                        )}
                       </div>
                       <p className="text-gray-600 mb-3">{job.description}</p>
                     </div>

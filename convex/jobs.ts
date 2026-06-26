@@ -76,18 +76,27 @@ export const listWithClient = query({
       jobs.map(async (job) => ({
         ...job,
         clientName: (await ctx.db.get(job.clientId))?.name ?? null,
+        categoryName: job.categoryId
+          ? ((await ctx.db.get(job.categoryId))?.name ?? null)
+          : null,
       })),
     );
   },
 });
 
-// Single job + poster name (job detail page).
+// Single job + poster name + category (job detail page).
 export const getWithClient = query({
   args: { id: v.id("jobs") },
   handler: async (ctx, { id }) => {
     const job = await ctx.db.get(id);
     if (!job) return null;
-    return { ...job, clientName: (await ctx.db.get(job.clientId))?.name ?? null };
+    return {
+      ...job,
+      clientName: (await ctx.db.get(job.clientId))?.name ?? null,
+      categoryName: job.categoryId
+        ? ((await ctx.db.get(job.categoryId))?.name ?? null)
+        : null,
+    };
   },
 });
 
