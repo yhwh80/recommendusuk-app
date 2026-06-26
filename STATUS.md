@@ -12,16 +12,20 @@ if no bids), accept proposal + freelancer-profile links, complete→review loop 
 show on profile), and **1:1 messaging** (inbox, threads, unread badges; entry points on
 profile/job/dashboards). Plus mobile hamburger on dashboard headers.
 
-**NEXT SESSION — start here:** **#4 smaller batch** — profile photo upload (Convex file
-storage; avatars are initials now), edit/withdraw a bid (freelancer side), earnings stat
-on freelancer dashboard. THEN the **email layer** (pre-launch): email verification on
-signup + email notifications via Resend — `notify()` in convex/notifications.ts is the
-hook point; put RESEND_API_KEY in Convex env. SGP's call: do the email layer right before
-inviting real users, not during solo testing.
+**ALL 4 FEATURE IDEAS DONE** (messaging, notifications, search/filter, smaller batch).
 
-DONE 2026-06-26: **#3 search/filter + categories** — browse page keyword search + Area +
-Skill + Category filters + open-only + clear; categories wired (picker on post-job, badges
-on cards/detail, listWithClient resolves categoryName); 6 categories seeded on prod.
+**NEXT SESSION — start here:** the **email layer** (pre-launch hardening): email
+verification on signup + email notifications via Resend. Hook point = `notify()` in
+convex/notifications.ts; put RESEND_API_KEY in Convex env. SGP's call: do this right
+before inviting real users, NOT during solo testing. Other pre-launch items: compress
+the ~2.5MB landing PNGs, www→root redirect/SSL, flip GitHub repo private (needs Coolify
+GitHub App), confirm auto-deploy is connected.
+
+DONE 2026-06-26: **#3 search/filter + categories** (browse keyword + Area + Skill +
+Category filters; category picker on post-job; badges; categoryName resolved; 6 cats
+seeded on prod). **#4 smaller batch** — profile photo upload (Convex file storage,
+shown on profile/cards w/ initials fallback); freelancers edit/withdraw own pending bids
+(withdraw frees a slot + re-opens a capped job); "Total Earned" stat on freelancer dash.
 
 DONE 2026-06-26: **🔔 notifications (#2)** — notifications table + notify() helper,
 triggers on bid-accepted/new-bid/new-review/job-completed, /notifications page, 🔔 bell
