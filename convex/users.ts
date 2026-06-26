@@ -62,6 +62,7 @@ export const listFreelancers = query({
     return [...freelancers, ...both].map((u) => ({
       _id: u._id,
       name: u.name ?? null,
+      profilePictureUrl: u.profilePictureUrl ?? null,
       bio: u.bio ?? null,
       skills: u.skills ?? [],
       hourlyRate: u.hourlyRate ?? null,
@@ -70,6 +71,27 @@ export const listFreelancers = query({
       totalJobsCompleted: u.totalJobsCompleted ?? 0,
       isRecommended: u.isRecommended ?? false,
     }));
+  },
+});
+
+// Step 1 of photo upload: get a short-lived URL to PUT the image bytes to.
+export const generateUploadUrl = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (userId === null) throw new Error("Not authenticated");
+    return await ctx.storage.generateUploadUrl();
+  },
+});
+
+// Step 2: save the uploaded file as the user's profile picture.
+export const setProfileImage = mutation({
+  args: { storageId: v.id("_storage") },
+  handler: async (ctx, { storageId }) => {
+    const userId = await getAuthUserId(ctx);
+    if (userId === null) throw new Error("Not authenticated");
+    const url = await ctx.storage.getUrl(storageId);
+    await ctx.db.patch(userId, { profilePictureUrl: url ?? undefined });
   },
 });
 

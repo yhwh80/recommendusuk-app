@@ -11,7 +11,28 @@ export default function MyProfilePage() {
   const { isLoading, isAuthenticated } = useConvexAuth()
   const user = useCurrentUser()
   const updateProfile = useMutation(api.users.updateProfile)
+  const generateUploadUrl = useMutation(api.users.generateUploadUrl)
+  const setProfileImage = useMutation(api.users.setProfileImage)
   const router = useRouter()
+  const [uploading, setUploading] = useState(false)
+
+  const handlePhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    try {
+      const url = await generateUploadUrl()
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': file.type },
+        body: file,
+      })
+      const { storageId } = await res.json()
+      await setProfileImage({ storageId })
+    } finally {
+      setUploading(false)
+    }
+  }
 
   const [form, setForm] = useState({
     name: '',
@@ -115,6 +136,25 @@ export default function MyProfilePage() {
         </div>
 
         <form onSubmit={handleSave} className="bg-white rounded-2xl border border-green-100 p-8 space-y-6">
+          {/* Profile photo */}
+          <div className="flex items-center gap-5">
+            {user.profilePictureUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={user.profilePictureUrl} alt="Profile" className="w-20 h-20 rounded-full object-cover" />
+            ) : (
+              <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-green-200 rounded-full flex items-center justify-center">
+                <span className="text-white text-3xl font-semibold">{user.name?.charAt(0).toUpperCase() || 'U'}</span>
+              </div>
+            )}
+            <div>
+              <label className="inline-block px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg cursor-pointer hover:bg-gray-200">
+                {uploading ? 'Uploading…' : 'Change photo'}
+                <input type="file" accept="image/*" onChange={handlePhoto} disabled={uploading} className="hidden" />
+              </label>
+              <p className="text-xs text-gray-500 mt-1">JPG or PNG. Saves instantly.</p>
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
             <input

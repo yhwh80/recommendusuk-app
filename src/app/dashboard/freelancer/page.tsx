@@ -47,6 +47,9 @@ export default function FreelancerDashboard() {
 
   const wonBids = myBids.filter((bid) => bid.status === 'accepted').length
   const pendingBids = myBids.filter((bid) => bid.status === 'pending').length
+  const totalEarned = myBids
+    .filter((bid) => bid.status === 'accepted')
+    .reduce((sum, bid) => sum + bid.amount, 0) / 100
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -134,7 +137,19 @@ export default function FreelancerDashboard() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-8">
+          <div className="bg-white p-6 rounded-xl shadow-sm border">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <span className="text-2xl">💷</span>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Total Earned</p>
+                <p className="text-2xl font-bold text-gray-900">£{totalEarned.toLocaleString()}</p>
+              </div>
+            </div>
+          </div>
+
           <div className="bg-white p-6 rounded-xl shadow-sm border">
             <div className="flex items-center">
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">

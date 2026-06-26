@@ -60,11 +60,16 @@ export default function FreelancersPage() {
                 className="bg-white rounded-2xl border border-green-100 p-6 hover:border-green-300 hover:shadow-md transition-all"
               >
                 <div className="flex items-center space-x-4 mb-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-green-400 to-green-200 rounded-full flex items-center justify-center shadow-inner">
-                    <span className="text-white text-xl font-semibold">
-                      {f.name?.charAt(0).toUpperCase() || 'U'}
-                    </span>
-                  </div>
+                  {f.profilePictureUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={f.profilePictureUrl} alt={f.name ?? 'Freelancer'} className="w-14 h-14 rounded-full object-cover" />
+                  ) : (
+                    <div className="w-14 h-14 bg-gradient-to-br from-green-400 to-green-200 rounded-full flex items-center justify-center shadow-inner">
+                      <span className="text-white text-xl font-semibold">
+                        {f.name?.charAt(0).toUpperCase() || 'U'}
+                      </span>
+                    </div>
+                  )}
                   <div>
                     <div className="font-semibold text-gray-900">{f.name || 'Freelancer'}</div>
                     <div className="flex items-center space-x-2 text-sm text-gray-500">

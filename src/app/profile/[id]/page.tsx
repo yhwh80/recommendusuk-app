@@ -56,11 +56,16 @@ export default function PublicProfilePage() {
         {/* Profile header card */}
         <div className="bg-white rounded-2xl border border-green-100 p-8 mb-6">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-            <div className="w-24 h-24 bg-gradient-to-br from-green-400 to-green-200 rounded-full flex items-center justify-center shadow-inner shrink-0">
-              <span className="text-white text-4xl font-semibold">
-                {profile.name?.charAt(0).toUpperCase() || 'U'}
-              </span>
-            </div>
+            {profile.profilePictureUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={profile.profilePictureUrl} alt={profile.name ?? 'Profile'} className="w-24 h-24 rounded-full object-cover shrink-0" />
+            ) : (
+              <div className="w-24 h-24 bg-gradient-to-br from-green-400 to-green-200 rounded-full flex items-center justify-center shadow-inner shrink-0">
+                <span className="text-white text-4xl font-semibold">
+                  {profile.name?.charAt(0).toUpperCase() || 'U'}
+                </span>
+              </div>
+            )}
             <div className="flex-1 text-center sm:text-left">
               <div className="flex items-center justify-center sm:justify-start gap-3 mb-1">
                 <h1 className="text-3xl font-bold text-gray-900">{profile.name || 'Freelancer'}</h1>

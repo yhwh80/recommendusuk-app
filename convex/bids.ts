@@ -108,3 +108,48 @@ export const create = mutation({
     return bidId;
   },
 });
+
+// Edit your own pending bid (amount + message).
+export const update = mutation({
+  args: { bidId: v.id("bids"), amount: v.number(), message: v.string() },
+  handler: async (ctx, { bidId, amount, message }) => {
+    const userId = await getAuthUserId(ctx);
+    if (userId === null) throw new Error("Not authenticated");
+    const bid = await ctx.db.get(bidId);
+    if (!bid) throw new Error("Bid not found");
+    if (bid.professionalId !== userId) throw new Error("Not your bid");
+    if (bid.status !== "pending") {
+      throw new Error("Only pending bids can be edited");
+    }
+    await ctx.db.patch(bidId, { amount, message });
+  },
+});
+
+// Withdraw (delete) your own pending bid. Frees a slot — if the job had
+// auto-closed at the bid cap and no one's hired, it re-opens for new bids.
+export const withdraw = mutation({
+  args: { bidId: v.id("bids") },
+  handler: async (ctx, { bidId }) => {
+    const userId = await getAuthUserId(ctx);
+    if (userId === null) throw new Error("Not authenticated");
+    const bid = await ctx.db.get(bidId);
+    if (!bid) throw new Error("Bid not found");
+    if (bid.professionalId !== userId) throw new Error("Not your bid");
+    if (bid.status !== "pending") {
+      throw new Error("Only pending bids can be withdrawn");
+    }
+    const job = await ctx.db.get(bid.jobId);
+    await ctx.db.delete(bidId);
+    if (job) {
+      const newCount = Math.max(0, job.currentBids - 1);
+      const reopen =
+        job.status === "closed" &&
+        !job.selectedProfessionalId &&
+        newCount < job.maxBids;
+      await ctx.db.patch(job._id, {
+        currentBids: newCount,
+        status: reopen ? "open" : job.status,
+      });
+    }
+  },
+});
