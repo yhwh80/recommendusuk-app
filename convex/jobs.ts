@@ -1,6 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { notify } from "./notifications";
 
 const JOB_COST_CREDITS = 5;
 const MAX_BIDS = 3;
@@ -169,6 +170,12 @@ export const acceptBid = mutation({
       acceptedBidId: bidId,
       selectedProfessionalId: bid.professionalId,
     });
+    await notify(ctx, {
+      userId: bid.professionalId,
+      type: "bid_accepted",
+      message: `Your proposal for "${job.title}" was accepted 🎉`,
+      link: `/jobs/${jobId}`,
+    });
   },
 });
 
@@ -186,6 +193,12 @@ export const complete = mutation({
     }
     if (job.status === "completed") throw new Error("Job is already completed");
     await ctx.db.patch(jobId, { status: "completed", completedAt: Date.now() });
+    await notify(ctx, {
+      userId: job.selectedProfessionalId,
+      type: "job_completed",
+      message: `"${job.title}" was marked complete — leave it on your record!`,
+      link: `/jobs/${jobId}`,
+    });
   },
 });
 

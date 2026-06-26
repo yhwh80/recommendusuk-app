@@ -113,6 +113,20 @@ export default defineSchema({
     stripeReference: v.optional(v.string()),
   }).index("by_user", ["userId"]),
 
+  // In-app notifications (bid accepted, new bid, new review, job completed).
+  notifications: defineTable({
+    userId: v.id("users"),
+    type: v.union(
+      v.literal("bid_accepted"),
+      v.literal("new_bid"),
+      v.literal("new_review"),
+      v.literal("job_completed"),
+    ),
+    message: v.string(),
+    link: v.optional(v.string()),
+    readAt: v.optional(v.number()),
+  }).index("by_user", ["userId"]),
+
   // Direct messages between users, optionally tied to a job.
   messages: defineTable({
     jobId: v.optional(v.id("jobs")),

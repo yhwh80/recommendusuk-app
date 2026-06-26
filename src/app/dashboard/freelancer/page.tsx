@@ -14,6 +14,7 @@ export default function FreelancerDashboard() {
   const availableJobs = useQuery(api.jobs.listOpen)
   const myBids = useQuery(api.bids.listMine)
   const unread = useQuery(api.messages.unreadCount)
+  const notifUnread = useQuery(api.notifications.unreadCount)
   const [menuOpen, setMenuOpen] = useState(false)
   const { signOut } = useAuthActions()
   const router = useRouter()
@@ -77,6 +78,14 @@ export default function FreelancerDashboard() {
                   </span>
                 )}
               </Link>
+              <Link href="/notifications" className="relative text-gray-600 hover:text-green-600 text-xl" aria-label="Notifications">
+                🔔
+                {!!notifUnread && notifUnread > 0 && (
+                  <span className="absolute -top-1 -right-2 bg-green-500 text-white text-xs font-semibold rounded-full px-1.5">
+                    {notifUnread}
+                  </span>
+                )}
+              </Link>
               <span className="text-sm text-gray-600">Welcome, {user.name}</span>
               <button onClick={handleSignOut} className="text-gray-500 hover:text-gray-700 text-sm">
                 Sign out
@@ -104,6 +113,9 @@ export default function FreelancerDashboard() {
               <Link href="/jobs" className="px-2 py-2 rounded hover:bg-green-50 text-gray-700 font-medium">Browse Jobs</Link>
               <Link href="/messages" className="px-2 py-2 rounded hover:bg-green-50 text-gray-700 font-medium">
                 Messages {!!unread && unread > 0 && <span className="ml-1 bg-green-500 text-white text-xs font-semibold rounded-full px-1.5">{unread}</span>}
+              </Link>
+              <Link href="/notifications" className="px-2 py-2 rounded hover:bg-green-50 text-gray-700 font-medium">
+                🔔 Notifications {!!notifUnread && notifUnread > 0 && <span className="ml-1 bg-green-500 text-white text-xs font-semibold rounded-full px-1.5">{notifUnread}</span>}
               </Link>
               <Link href="/profile" className="px-2 py-2 rounded hover:bg-green-50 text-gray-700 font-medium">My Profile</Link>
               <button onClick={handleSignOut} className="text-left px-2 py-2 rounded hover:bg-green-50 text-gray-500">Sign out</button>

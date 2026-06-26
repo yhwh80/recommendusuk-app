@@ -13,6 +13,8 @@ export default function ClientDashboard() {
   const user = useCurrentUser()
   const jobs = useQuery(api.jobs.listMine)
   const unread = useQuery(api.messages.unreadCount)
+  const notifUnread = useQuery(api.notifications.unreadCount)
+  const [menuOpen, setMenuOpen] = useState(false)
   const { signOut } = useAuthActions()
   const router = useRouter()
 
@@ -47,18 +49,19 @@ export default function ClientDashboard() {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <Link href="/" className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3 min-w-0">
+              <Link href="/" className="flex items-center space-x-2 shrink-0">
                 <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-green-400 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold">R</span>
                 </div>
                 <span className="text-lg font-bold text-gray-800">RecommendUsUK</span>
               </Link>
-              <span className="text-gray-400">|</span>
-              <span className="font-medium text-gray-600">Client Dashboard</span>
+              <span className="hidden sm:inline text-gray-400">|</span>
+              <span className="hidden sm:inline font-medium text-gray-600">Client Dashboard</span>
             </div>
 
-            <div className="flex items-center space-x-4">
+            {/* Desktop nav */}
+            <div className="hidden md:flex items-center space-x-4">
               <Link href="/my-jobs" className="text-gray-600 hover:text-green-600 font-medium">
                 My Jobs
               </Link>
@@ -73,17 +76,49 @@ export default function ClientDashboard() {
                   </span>
                 )}
               </Link>
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <span>Welcome, {user.name}</span>
-              </div>
-              <button
-                onClick={handleSignOut}
-                className="text-gray-500 hover:text-gray-700 text-sm"
-              >
+              <Link href="/notifications" className="relative text-gray-600 hover:text-green-600 text-xl" aria-label="Notifications">
+                🔔
+                {!!notifUnread && notifUnread > 0 && (
+                  <span className="absolute -top-1 -right-2 bg-green-500 text-white text-xs font-semibold rounded-full px-1.5">
+                    {notifUnread}
+                  </span>
+                )}
+              </Link>
+              <span className="text-sm text-gray-600">Welcome, {user.name}</span>
+              <button onClick={handleSignOut} className="text-gray-500 hover:text-gray-700 text-sm">
                 Sign out
               </button>
             </div>
+
+            {/* Mobile hamburger */}
+            <button
+              onClick={() => setMenuOpen((o) => !o)}
+              className="md:hidden relative p-2 text-gray-700"
+              aria-label="Menu"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={menuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'} />
+              </svg>
+              {!menuOpen && ((!!unread && unread > 0) || (!!notifUnread && notifUnread > 0)) && (
+                <span className="absolute top-1 right-1 bg-green-500 w-2.5 h-2.5 rounded-full" />
+              )}
+            </button>
           </div>
+
+          {/* Mobile dropdown */}
+          {menuOpen && (
+            <div className="md:hidden mt-3 pt-3 border-t border-gray-100 flex flex-col space-y-1">
+              <Link href="/my-jobs" className="px-2 py-2 rounded hover:bg-green-50 text-gray-700 font-medium">My Jobs</Link>
+              <Link href="/freelancers" className="px-2 py-2 rounded hover:bg-green-50 text-gray-700 font-medium">Browse Freelancers</Link>
+              <Link href="/messages" className="px-2 py-2 rounded hover:bg-green-50 text-gray-700 font-medium">
+                Messages {!!unread && unread > 0 && <span className="ml-1 bg-green-500 text-white text-xs font-semibold rounded-full px-1.5">{unread}</span>}
+              </Link>
+              <Link href="/notifications" className="px-2 py-2 rounded hover:bg-green-50 text-gray-700 font-medium">
+                🔔 Notifications {!!notifUnread && notifUnread > 0 && <span className="ml-1 bg-green-500 text-white text-xs font-semibold rounded-full px-1.5">{notifUnread}</span>}
+              </Link>
+              <button onClick={handleSignOut} className="text-left px-2 py-2 rounded hover:bg-green-50 text-gray-500">Sign out</button>
+            </div>
+          )}
         </div>
       </header>
 

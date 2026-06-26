@@ -1,6 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { notify } from "./notifications";
 
 // Bids on a job (job detail page).
 export const listByJob = query({
@@ -97,6 +98,12 @@ export const create = mutation({
     await ctx.db.patch(jobId, {
       currentBids: newCount,
       status: newCount >= job.maxBids ? "closed" : job.status,
+    });
+    await notify(ctx, {
+      userId: job.clientId,
+      type: "new_bid",
+      message: `New proposal on "${job.title}"`,
+      link: `/jobs/${jobId}`,
     });
     return bidId;
   },

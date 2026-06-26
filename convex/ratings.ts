@@ -1,6 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { notify } from "./notifications";
 
 // Ratings received by a user (their reputation).
 export const listForUser = query({
@@ -69,6 +70,12 @@ export const create = mutation({
       totalRating: avg,
       totalJobsCompleted: (reviewee?.totalJobsCompleted ?? 0) + 1,
       isRecommended: args.recommended || (reviewee?.isRecommended ?? false),
+    });
+    await notify(ctx, {
+      userId: args.revieweeId,
+      type: "new_review",
+      message: `You received a ${args.rating}-star review ⭐`,
+      link: `/profile/${args.revieweeId}`,
     });
     return ratingId;
   },
