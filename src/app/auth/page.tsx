@@ -66,7 +66,10 @@ function AuthPageInner() {
     setLoading(true)
     setMessage('')
     try {
+      // 1) Confirm the email with the code, then 2) sign in with the password
+      // they just set, so they land straight in their dashboard (no re-login).
       await signIn('password', { email, code, flow: 'email-verification' })
+      await signIn('password', { email, password, flow: 'signIn' })
       router.push(role === 'client' ? '/dashboard/client' : '/dashboard/freelancer')
     } catch {
       setMessage('That code was wrong or expired. Check your email and try again.')
