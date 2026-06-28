@@ -20,7 +20,18 @@ photos AND videos (portfolio table + portfolio.list/add/remove; editor on /profi
 gallery on public profile); (2) profile photo **cropper** (react-easy-crop — drag+zoom,
 no need to pre-make a square logo); (3) "Return to dashboard" links added where missing.
 
-**NEXT SESSION — start here (GO-LIVE step):** the **email layer** (pre-launch hardening): email
+DONE 2026-06-28 (GO-LIVE): **Email verification on signup** — Resend wired in.
+RESEND_API_KEY in Convex env (dev+prod). Domain recommendusjobsuk.com verified in
+Resend (DKIM/SPF/MX/DMARC at Namecheap; switched Mail Settings to Custom MX for the
+MX record). `convex/ResendOTP.ts` emails a 6-digit code from noreply@recommendusjobsuk.com;
+Password provider uses `verify: ResendOTP`; auth page is now two-step (credentials →
+code → verified). Test email confirmed delivered to Gmail. Resend acct is the Pass
+Plus one but separate domain+key — sends from the domain so the account email doesn't matter.
+
+**NEXT — remaining pre-launch polish:** (1) email NOTIFICATIONS (the other half — hook
+Resend into notify() so bid-accepted/new-review etc. also email); (2) compress the ~2.5MB
+landing PNGs; (3) www SSL/redirect; (4) GitHub App for INSTANT private deploys (Comet
+runbook ready) then flip repo private. Old note below re: the email layer:
 verification on signup + email notifications via Resend. Hook point = `notify()` in
 convex/notifications.ts; put RESEND_API_KEY in Convex env. SGP's call: do this right
 before inviting real users, NOT during solo testing. Other pre-launch items: compress

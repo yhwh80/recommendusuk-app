@@ -1,5 +1,23 @@
 import { internalMutation } from "./_generated/server";
 
+// Grandfather existing accounts (created before email verification was added)
+// as verified, so they can still log in. New signups still verify by code.
+//   npx convex run seed:grandfatherVerified --prod
+export const grandfatherVerified = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const users = await ctx.db.query("users").collect();
+    let n = 0;
+    for (const u of users) {
+      if (u.emailVerificationTime === undefined && u.email) {
+        await ctx.db.patch(u._id, { emailVerificationTime: Date.now() });
+        n++;
+      }
+    }
+    return `Grandfathered ${n} existing user(s) as verified.`;
+  },
+});
+
 // Categories only — safe for production (no demo users/jobs). Idempotent.
 //   npx convex run seed:categoriesOnly --prod
 export const categoriesOnly = internalMutation({
