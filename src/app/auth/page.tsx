@@ -15,6 +15,8 @@ function AuthPageInner() {
   const [role, setRole] = useState<'client' | 'freelancer'>('client')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
+  const [step, setStep] = useState<'credentials' | 'verify'>('credentials')
+  const [code, setCode] = useState('')
 
   const { signIn } = useAuthActions()
   const router = useRouter()
@@ -42,13 +44,11 @@ function AuthPageInner() {
         // Role-aware redirect handled by /dashboard
         router.push('/dashboard')
       } else {
-        // Convex Auth creates the user; our Password.profile() callback sets
-        // name, role and the free signup credits (client 25 / freelancer 10).
+        // Sign up — Convex Auth emails a verification code and does NOT sign in
+        // yet. We move to the "enter code" step. profile() sets name/role/credits.
         await signIn('password', { email, password, name, role, flow: 'signUp' })
-        setMessage('Account created successfully! Redirecting...')
-        setTimeout(() => {
-          router.push(role === 'client' ? '/dashboard/client' : '/dashboard/freelancer')
-        }, 1200)
+        setStep('verify')
+        setMessage('We emailed you a 6-digit code — enter it below to finish.')
       }
     } catch (error: unknown) {
       setMessage(
@@ -56,6 +56,20 @@ function AuthPageInner() {
           ? error.message
           : 'An error occurred. Check your email and password (min 8 characters).',
       )
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleVerify = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setMessage('')
+    try {
+      await signIn('password', { email, code, flow: 'email-verification' })
+      router.push(role === 'client' ? '/dashboard/client' : '/dashboard/freelancer')
+    } catch {
+      setMessage('That code was wrong or expired. Check your email and try again.')
     } finally {
       setLoading(false)
     }
@@ -83,6 +97,46 @@ function AuthPageInner() {
 
         {/* Auth Form */}
         <div className="bg-white rounded-2xl shadow-lg p-8">
+          {step === 'verify' ? (
+            <form onSubmit={handleVerify} className="space-y-4">
+              <p className="text-gray-600 text-sm">
+                Enter the 6-digit code we emailed to <strong>{email}</strong>.
+              </p>
+              <input
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                required
+                inputMode="numeric"
+                maxLength={6}
+                placeholder="123456"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg text-center text-2xl tracking-[0.4em] focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+              {message && (
+                <div className={`p-4 rounded-lg text-sm ${
+                  message.includes('wrong') || message.includes('expired')
+                    ? 'bg-red-50 text-red-700 border border-red-200'
+                    : 'bg-green-50 text-green-700 border border-green-200'
+                }`}>
+                  {message}
+                </div>
+              )}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-green-500 to-green-400 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+              >
+                {loading ? 'Verifying…' : 'Verify & continue'}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setStep('credentials'); setMessage('') }}
+                className="w-full text-sm text-gray-500 hover:text-gray-700"
+              >
+                ← Use a different email
+              </button>
+            </form>
+          ) : (
+          <>
           {!isLogin && (
             <div className="mb-6">
               <label className="block text-sm font-semibold text-gray-700 mb-3">I want to:</label>
@@ -207,6 +261,8 @@ function AuthPageInner() {
               ← Back to homepage
             </Link>
           </div>
+          </>
+          )}
         </div>
       </div>
     </div>

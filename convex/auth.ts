@@ -1,12 +1,15 @@
 import { Password } from "@convex-dev/auth/providers/Password";
 import { convexAuth } from "@convex-dev/auth/server";
+import { ResendOTP } from "./ResendOTP";
 
 // Email/password auth, replacing Supabase Auth. The `profile` callback runs on
 // sign-up: it captures name + role and grants the free signup credits the old
 // app gave (clients 25, freelancers 10 — per the README's signup bonuses).
+// `verify: ResendOTP` requires the user to confirm their email with a code.
 export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
   providers: [
     Password({
+      verify: ResendOTP,
       profile(params) {
         const role =
           (params.role as "client" | "freelancer" | "both") ?? "client";
