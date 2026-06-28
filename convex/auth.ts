@@ -1,6 +1,7 @@
 import { Password } from "@convex-dev/auth/providers/Password";
 import { convexAuth } from "@convex-dev/auth/server";
 import { ResendOTP } from "./ResendOTP";
+import { internal } from "./_generated/api";
 
 // Email/password auth, replacing Supabase Auth. The `profile` callback runs on
 // sign-up: it captures name + role and grants the free signup credits the old
@@ -39,6 +40,13 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
           reason: "signup_bonus",
         });
       }
+      // Email Simon that someone new joined (runs as an action — can't fetch
+      // from inside a mutation, so we schedule it).
+      await ctx.scheduler.runAfter(0, internal.adminAlerts.newSignup, {
+        name: user?.name ?? "",
+        email: user?.email ?? "",
+        role: user?.role ?? "user",
+      });
     },
   },
 });

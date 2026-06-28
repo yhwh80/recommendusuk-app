@@ -1,4 +1,55 @@
 import { internalMutation } from "./_generated/server";
+import { v } from "convex/values";
+
+// Fully delete a user (and their login + content) so the email can re-register.
+//   npx convex run seed:deleteUserByEmail '{"email":"x@y.com"}' --prod
+export const deleteUserByEmail = internalMutation({
+  args: { email: v.string() },
+  handler: async (ctx, { email }) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("email", (q) => q.eq("email", email))
+      .unique();
+    if (!user) return `No user with email ${email}`;
+    const uid = user._id;
+
+    // Login credentials + sessions
+    for (const a of await ctx.db
+      .query("authAccounts")
+      .withIndex("userIdAndProvider", (q) => q.eq("userId", uid))
+      .collect())
+      await ctx.db.delete(a._id);
+    for (const s of await ctx.db
+      .query("authSessions")
+      .withIndex("userId", (q) => q.eq("userId", uid))
+      .collect()) {
+      for (const rt of await ctx.db
+        .query("authRefreshTokens")
+        .withIndex("sessionId", (q) => q.eq("sessionId", s._id))
+        .collect())
+        await ctx.db.delete(rt._id);
+      await ctx.db.delete(s._id);
+    }
+
+    // Their content
+    const cascades = [
+      ctx.db.query("bids").withIndex("by_professional", (q) => q.eq("professionalId", uid)),
+      ctx.db.query("jobs").withIndex("by_client", (q) => q.eq("clientId", uid)),
+      ctx.db.query("portfolio").withIndex("by_user", (q) => q.eq("userId", uid)),
+      ctx.db.query("notifications").withIndex("by_user", (q) => q.eq("userId", uid)),
+      ctx.db.query("creditTransactions").withIndex("by_user", (q) => q.eq("userId", uid)),
+      ctx.db.query("messages").withIndex("by_sender", (q) => q.eq("senderId", uid)),
+      ctx.db.query("messages").withIndex("by_recipient", (q) => q.eq("recipientId", uid)),
+      ctx.db.query("ratings").withIndex("by_reviewee", (q) => q.eq("revieweeId", uid)),
+    ];
+    for (const c of cascades) {
+      for (const row of await c.collect()) await ctx.db.delete(row._id);
+    }
+
+    await ctx.db.delete(uid);
+    return `Deleted user ${email} and their data — the email can now re-register.`;
+  },
+});
 
 // Grandfather existing accounts (created before email verification was added)
 // as verified, so they can still log in. New signups still verify by code.
