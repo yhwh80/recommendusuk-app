@@ -16,6 +16,7 @@ import type * as http from "../http.js";
 import type * as jobs from "../jobs.js";
 import type * as messages from "../messages.js";
 import type * as notifications from "../notifications.js";
+import type * as portfolio from "../portfolio.js";
 import type * as ratings from "../ratings.js";
 import type * as seed from "../seed.js";
 import type * as stats from "../stats.js";
@@ -36,6 +37,7 @@ declare const fullApi: ApiFromModules<{
   jobs: typeof jobs;
   messages: typeof messages;
   notifications: typeof notifications;
+  portfolio: typeof portfolio;
   ratings: typeof ratings;
   seed: typeof seed;
   stats: typeof stats;

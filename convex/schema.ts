@@ -113,6 +113,15 @@ export default defineSchema({
     stripeReference: v.optional(v.string()),
   }).index("by_user", ["userId"]),
 
+  // Portfolio / work samples — photos AND videos a pro or advertiser uploads.
+  portfolio: defineTable({
+    userId: v.id("users"),
+    storageId: v.id("_storage"),
+    url: v.string(),
+    mediaType: v.union(v.literal("image"), v.literal("video")),
+    caption: v.optional(v.string()),
+  }).index("by_user", ["userId"]),
+
   // In-app notifications (bid accepted, new bid, new review, job completed).
   notifications: defineTable({
     userId: v.id("users"),

@@ -6,12 +6,14 @@ import { useQuery } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
 import { Id } from '../../../../convex/_generated/dataModel'
 import { useCurrentUser } from '@/lib/useCurrentUser'
+import { SiteHeader } from '@/components/SiteHeader'
 
 export default function PublicProfilePage() {
   const params = useParams()
   const id = params.id as Id<'users'>
   const profile = useQuery(api.users.getPublicProfile, { id })
   const reviews = useQuery(api.ratings.listForUser, { userId: id })
+  const portfolio = useQuery(api.portfolio.list, { userId: id })
   const me = useCurrentUser()
 
   if (profile === undefined) {
@@ -35,22 +37,13 @@ export default function PublicProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-green-100">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-green-200 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold">R</span>
-              </div>
-              <span className="text-lg font-bold text-gray-800">RecommendUsUK</span>
-            </Link>
-            <Link href="/freelancers" className="text-gray-600 hover:text-green-500 font-medium">
-              ← All freelancers
-            </Link>
-          </div>
-        </div>
-      </header>
+      <SiteHeader
+        label="Profile"
+        links={[
+          { href: '/freelancers', label: 'Freelancers' },
+          { href: '/dashboard', label: 'Dashboard' },
+        ]}
+      />
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Profile header card */}
@@ -117,6 +110,25 @@ export default function PublicProfilePage() {
             </div>
           )}
         </div>
+
+        {/* Portfolio */}
+        {portfolio && portfolio.length > 0 && (
+          <div className="bg-white rounded-2xl border border-green-100 p-8 mb-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Portfolio</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {portfolio.map((item) => (
+                <div key={item._id} className="rounded-lg overflow-hidden border border-gray-100 aspect-square bg-gray-50">
+                  {item.mediaType === 'video' ? (
+                    <video src={item.url} controls className="w-full h-full object-cover" />
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={item.url} alt={item.caption ?? 'Work sample'} className="w-full h-full object-cover" />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Reviews */}
         <div className="bg-white rounded-2xl border border-green-100 p-8">

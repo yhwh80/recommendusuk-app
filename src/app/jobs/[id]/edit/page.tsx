@@ -128,9 +128,14 @@ export default function EditJobPage() {
               </div>
               <span className="text-lg font-bold text-gray-800">RecommendUsUK</span>
             </Link>
-            <Link href={`/jobs/${jobId}`} className="text-gray-600 hover:text-green-600 font-medium">
-              ← Back to job
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link href={`/jobs/${jobId}`} className="text-gray-600 hover:text-green-600 font-medium">
+                ← Back to job
+              </Link>
+              <Link href="/dashboard" className="text-gray-600 hover:text-green-600 font-medium">
+                Dashboard
+              </Link>
+            </div>
           </div>
         </div>
       </header>

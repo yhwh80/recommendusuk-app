@@ -3,9 +3,10 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { useConvexAuth, useMutation } from 'convex/react'
+import { useConvexAuth, useMutation, useQuery } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
 import { useCurrentUser } from '@/lib/useCurrentUser'
+import { ImageCropModal } from '@/components/ImageCropModal'
 
 export default function MyProfilePage() {
   const { isLoading, isAuthenticated } = useConvexAuth()
@@ -13,24 +14,57 @@ export default function MyProfilePage() {
   const updateProfile = useMutation(api.users.updateProfile)
   const generateUploadUrl = useMutation(api.users.generateUploadUrl)
   const setProfileImage = useMutation(api.users.setProfileImage)
+  const addPortfolio = useMutation(api.portfolio.add)
+  const removePortfolio = useMutation(api.portfolio.remove)
+  const portfolio = useQuery(api.portfolio.list, user ? { userId: user._id } : 'skip')
   const router = useRouter()
   const [uploading, setUploading] = useState(false)
+  const [cropSrc, setCropSrc] = useState<string | null>(null)
+  const [portfolioBusy, setPortfolioBusy] = useState(false)
 
-  const handlePhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Helper: upload any blob/file to Convex storage, return the storageId.
+  const uploadToStorage = async (data: Blob, contentType: string) => {
+    const url = await generateUploadUrl()
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': contentType },
+      body: data,
+    })
+    const { storageId } = await res.json()
+    return storageId as string
+  }
+
+  // Profile photo: open the crop modal first.
+  const handlePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+    setCropSrc(URL.createObjectURL(file))
+    e.target.value = '' // allow re-selecting the same file
+  }
+
+  const handleCropped = async (blob: Blob) => {
     setUploading(true)
     try {
-      const url = await generateUploadUrl()
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': file.type },
-        body: file,
-      })
-      const { storageId } = await res.json()
-      await setProfileImage({ storageId })
+      const storageId = await uploadToStorage(blob, 'image/jpeg')
+      await setProfileImage({ storageId: storageId as never })
+      setCropSrc(null)
     } finally {
       setUploading(false)
+    }
+  }
+
+  // Portfolio: photos AND videos.
+  const handlePortfolio = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const mediaType = file.type.startsWith('video') ? 'video' : 'image'
+    setPortfolioBusy(true)
+    try {
+      const storageId = await uploadToStorage(file, file.type)
+      await addPortfolio({ storageId: storageId as never, mediaType })
+    } finally {
+      setPortfolioBusy(false)
+      e.target.value = ''
     }
   }
 
@@ -239,7 +273,55 @@ export default function MyProfilePage() {
             </button>
           </div>
         </form>
+
+        {/* Portfolio — photos AND videos */}
+        <div className="bg-white rounded-2xl border border-green-100 p-8 mt-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">Portfolio</h2>
+              <p className="text-sm text-gray-500">Show off your work — upload photos and videos.</p>
+            </div>
+            <label className="inline-block px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg cursor-pointer hover:bg-green-700">
+              {portfolioBusy ? 'Uploading…' : '+ Add media'}
+              <input type="file" accept="image/*,video/*" onChange={handlePortfolio} disabled={portfolioBusy} className="hidden" />
+            </label>
+          </div>
+
+          {portfolio === undefined ? (
+            <p className="text-gray-400">Loading…</p>
+          ) : portfolio.length === 0 ? (
+            <p className="text-gray-500">No work samples yet. Add photos or videos to stand out.</p>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {portfolio.map((item) => (
+                <div key={item._id} className="relative group rounded-lg overflow-hidden border border-gray-100 aspect-square bg-gray-50">
+                  {item.mediaType === 'video' ? (
+                    <video src={item.url} controls className="w-full h-full object-cover" />
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={item.url} alt={item.caption ?? 'Work sample'} className="w-full h-full object-cover" />
+                  )}
+                  <button
+                    onClick={() => removePortfolio({ itemId: item._id })}
+                    className="absolute top-1 right-1 bg-white/90 text-red-600 rounded-full w-7 h-7 flex items-center justify-center text-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                    aria-label="Delete"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
+
+      {cropSrc && (
+        <ImageCropModal
+          src={cropSrc}
+          onCancel={() => setCropSrc(null)}
+          onCropped={handleCropped}
+        />
+      )}
     </div>
   )
 }

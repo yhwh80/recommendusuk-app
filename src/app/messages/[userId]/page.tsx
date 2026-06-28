@@ -74,6 +74,9 @@ export default function ConversationPage() {
           <Link href={`/profile/${otherId}`} className="text-sm text-green-600 hover:underline">
             View profile
           </Link>
+          <Link href="/dashboard" className="text-sm text-gray-500 hover:text-green-600">
+            Dashboard
+          </Link>
         </div>
       </header>
 
