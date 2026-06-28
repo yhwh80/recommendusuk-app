@@ -14,7 +14,13 @@ profile/job/dashboards). Plus mobile hamburger on dashboard headers.
 
 **ALL 4 FEATURE IDEAS DONE** (messaging, notifications, search/filter, smaller batch).
 
-**NEXT SESSION — start here:** the **email layer** (pre-launch hardening): email
+DONE 2026-06-28: responsive hamburger header across ALL pages (shared
+`SiteHeader`). **Freelancer-friend feedback shipped:** (1) Portfolio — upload
+photos AND videos (portfolio table + portfolio.list/add/remove; editor on /profile,
+gallery on public profile); (2) profile photo **cropper** (react-easy-crop — drag+zoom,
+no need to pre-make a square logo); (3) "Return to dashboard" links added where missing.
+
+**NEXT SESSION — start here (GO-LIVE step):** the **email layer** (pre-launch hardening): email
 verification on signup + email notifications via Resend. Hook point = `notify()` in
 convex/notifications.ts; put RESEND_API_KEY in Convex env. SGP's call: do this right
 before inviting real users, NOT during solo testing. Other pre-launch items: compress
