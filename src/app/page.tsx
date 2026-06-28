@@ -15,7 +15,7 @@ export default function Home() {
   }, [])
 
   return (
-    <div className="animated-bg text-gray-900" data-build="priv1">
+    <div className="animated-bg text-gray-900">
       {/* Floating Service Category Images */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src="/images/digital-tech.png" alt="Digital Tech Services" className="service-image digital-tech" data-animate />

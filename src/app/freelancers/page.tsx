@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useQuery } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
+import { SiteHeader } from '@/components/SiteHeader'
 
 export default function FreelancersPage() {
   const freelancers = useQuery(api.users.listFreelancers)
@@ -17,27 +18,13 @@ export default function FreelancersPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-green-100">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <Link href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-green-200 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold">R</span>
-                </div>
-                <span className="text-lg font-bold text-gray-800">RecommendUsUK</span>
-              </Link>
-              <span className="text-gray-400">|</span>
-              <span className="font-medium text-gray-600">Browse Freelancers</span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link href="/jobs" className="text-gray-600 hover:text-green-500 font-medium">Browse Jobs</Link>
-              <Link href="/auth?signup=true" className="bg-green-400 text-white px-4 py-2 rounded-lg hover:bg-green-500 transition-colors">Join now</Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <SiteHeader
+        label="Browse Freelancers"
+        links={[
+          { href: '/jobs', label: 'Browse Jobs' },
+          { href: '/auth?signup=true', label: 'Join now', primary: true },
+        ]}
+      />
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8">

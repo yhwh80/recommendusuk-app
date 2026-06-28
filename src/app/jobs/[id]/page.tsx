@@ -7,6 +7,7 @@ import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
 import { Id } from '../../../../convex/_generated/dataModel'
 import { useCurrentUser } from '@/lib/useCurrentUser'
+import { SiteHeader } from '@/components/SiteHeader'
 
 export const dynamic = 'force-dynamic'
 
@@ -148,42 +149,24 @@ export default function JobDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <Link href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-green-400 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold">R</span>
-                </div>
-                <span className="text-lg font-bold text-gray-800">RecommendUsUK</span>
-              </Link>
-              <span className="text-gray-400">|</span>
-              <Link href="/jobs" className="text-gray-600 hover:text-green-600">Browse Jobs</Link>
-              <span className="text-gray-400">|</span>
-              <span className="font-medium text-gray-600">Job Details</span>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              {user ? (
-                <Link href={`/dashboard/${user.role === 'client' ? 'client' : 'freelancer'}`} className="text-gray-600 hover:text-green-600 font-medium">
-                  Dashboard
-                </Link>
-              ) : (
-                <>
-                  <Link href="/auth" className="text-gray-600 hover:text-green-600 font-medium">
-                    Sign in
-                  </Link>
-                  <Link href="/auth?signup=true" className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
-                    Join now
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
+      <SiteHeader
+        label="Job Details"
+        links={
+          user
+            ? [
+                { href: '/jobs', label: 'Browse Jobs' },
+                {
+                  href: `/dashboard/${user.role === 'client' ? 'client' : 'freelancer'}`,
+                  label: 'Dashboard',
+                },
+              ]
+            : [
+                { href: '/jobs', label: 'Browse Jobs' },
+                { href: '/auth', label: 'Sign in' },
+                { href: '/auth?signup=true', label: 'Join now', primary: true },
+              ]
+        }
+      />
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

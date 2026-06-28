@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { SiteHeader } from '@/components/SiteHeader'
 import { useConvexAuth, useQuery } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
 
@@ -25,22 +26,13 @@ export default function MyJobsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b border-green-100">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-green-200 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold">R</span>
-              </div>
-              <span className="text-lg font-bold text-gray-800">RecommendUsUK</span>
-            </Link>
-            <div className="flex items-center space-x-4">
-              <Link href="/post-job" className="text-gray-600 hover:text-green-500 font-medium">Post a Job</Link>
-              <Link href="/dashboard/client" className="text-gray-600 hover:text-green-500 font-medium">Dashboard</Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <SiteHeader
+        label="My Jobs"
+        links={[
+          { href: '/post-job', label: 'Post a Job' },
+          { href: '/dashboard/client', label: 'Dashboard' },
+        ]}
+      />
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useConvexAuth } from 'convex/react'
 import { useCurrentUser } from '@/lib/useCurrentUser'
+import { SiteHeader } from '@/components/SiteHeader'
 
 export const dynamic = 'force-dynamic'
 
@@ -35,32 +36,20 @@ function PaymentSuccessInner() {
   // useCurrentUser is reactive, so the balance below updates automatically.
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <Link href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-green-400 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold">R</span>
-                </div>
-                <span className="text-lg font-bold text-gray-800">RecommendUsUK</span>
-              </Link>
-              <span className="text-gray-400">|</span>
-              <span className="font-medium text-gray-600">Payment Successful</span>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <Link href={`/dashboard/${user.role === 'client' ? 'client' : 'freelancer'}`} className="text-gray-600 hover:text-green-600 font-medium">
-                Dashboard
-              </Link>
-              <div className="text-sm text-gray-600">
-                Credits: <span className="font-medium">{user.credits}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <SiteHeader
+        label="Payment Successful"
+        links={[
+          {
+            href: `/dashboard/${user.role === 'client' ? 'client' : 'freelancer'}`,
+            label: 'Dashboard',
+          },
+        ]}
+        rightExtra={
+          <span className="text-sm text-gray-600">
+            Credits: <span className="font-medium">{user.credits}</span>
+          </span>
+        }
+      />
 
       <div className="max-w-4xl mx-auto px-4 py-16">
         <div className="text-center">
