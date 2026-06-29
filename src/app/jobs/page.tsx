@@ -2,11 +2,20 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useQuery } from 'convex/react'
+import { useQuery, useConvexAuth } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
-import { SiteHeader } from '@/components/SiteHeader'
+import { SiteHeader, NavLink } from '@/components/SiteHeader'
 
 export default function JobsPage() {
+  const { isLoading: authLoading, isAuthenticated } = useConvexAuth()
+  const headerLinks: NavLink[] = authLoading
+    ? []
+    : isAuthenticated
+      ? [{ href: '/dashboard', label: 'Dashboard' }, { href: '/messages', label: 'Messages' }]
+      : [
+          { href: '/auth', label: 'Sign in' },
+          { href: '/auth?signup=true', label: 'Join now', primary: true },
+        ]
   const [filter, setFilter] = useState<'all' | 'open'>('all')
   const [search, setSearch] = useState('')
   const [area, setArea] = useState('')
@@ -66,13 +75,7 @@ export default function JobsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <SiteHeader
-        label="Browse Jobs"
-        links={[
-          { href: '/auth', label: 'Sign in' },
-          { href: '/auth?signup=true', label: 'Join now', primary: true },
-        ]}
-      />
+      <SiteHeader label="Browse Jobs" links={headerLinks} />
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Page Header */}

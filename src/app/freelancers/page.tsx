@@ -1,12 +1,21 @@
 'use client'
 
 import Link from 'next/link'
-import { useQuery } from 'convex/react'
+import { useQuery, useConvexAuth } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
-import { SiteHeader } from '@/components/SiteHeader'
+import { SiteHeader, NavLink } from '@/components/SiteHeader'
 
 export default function FreelancersPage() {
   const freelancers = useQuery(api.users.listFreelancers)
+  const { isLoading: authLoading, isAuthenticated } = useConvexAuth()
+  const headerLinks: NavLink[] = [
+    { href: '/jobs', label: 'Browse Jobs' },
+    ...(authLoading
+      ? []
+      : isAuthenticated
+        ? [{ href: '/dashboard', label: 'Dashboard' } as NavLink]
+        : [{ href: '/auth?signup=true', label: 'Join now', primary: true } as NavLink]),
+  ]
 
   if (freelancers === undefined) {
     return (
@@ -18,13 +27,7 @@ export default function FreelancersPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <SiteHeader
-        label="Browse Freelancers"
-        links={[
-          { href: '/jobs', label: 'Browse Jobs' },
-          { href: '/auth?signup=true', label: 'Join now', primary: true },
-        ]}
-      />
+      <SiteHeader label="Browse Freelancers" links={headerLinks} />
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8">
