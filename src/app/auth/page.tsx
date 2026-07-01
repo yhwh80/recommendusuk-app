@@ -2,6 +2,7 @@
 
 import { Suspense, useState, useEffect } from 'react'
 import { useAuthActions } from '@convex-dev/auth/react'
+import { useConvexAuth } from 'convex/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
@@ -21,10 +22,20 @@ function AuthPageInner() {
   const [code, setCode] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [redirectTo, setRedirectTo] = useState<string | null>(null)
 
   const { signIn } = useAuthActions()
+  const { isAuthenticated } = useConvexAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
+
+  // Navigate ONLY once the login is actually confirmed client-side — avoids the
+  // race where we'd redirect before auth settled (blank screen / retry needed).
+  useEffect(() => {
+    if (isAuthenticated && redirectTo) {
+      router.replace(redirectTo)
+    }
+  }, [isAuthenticated, redirectTo, router])
 
   useEffect(() => {
     if (searchParams.get('signup')) {
@@ -45,8 +56,7 @@ function AuthPageInner() {
     try {
       if (isLogin) {
         await signIn('password', { email, password, flow: 'signIn' })
-        // Role-aware redirect handled by /dashboard
-        router.push('/dashboard')
+        setRedirectTo('/dashboard') // navigate once auth confirms (see effect)
       } else {
         // Sign up — Convex Auth emails a verification code and does NOT sign in
         // yet. We move to the "enter code" step. profile() sets name/role/credits.
@@ -74,7 +84,7 @@ function AuthPageInner() {
       // they just set, so they land straight in their dashboard (no re-login).
       await signIn('password', { email, code, flow: 'email-verification' })
       await signIn('password', { email, password, flow: 'signIn' })
-      router.push(role === 'client' ? '/dashboard/client' : '/dashboard/freelancer')
+      setRedirectTo(role === 'client' ? '/dashboard/client' : '/dashboard/freelancer')
     } catch {
       setMessage('That code was wrong or expired. Check your email and try again.')
     } finally {
@@ -135,7 +145,7 @@ function AuthPageInner() {
       await signIn('password', { email, code, newPassword, flow: 'reset-verification' })
       // Belt-and-suspenders: sign in with the new password so they land straight in.
       await signIn('password', { email, password: newPassword, flow: 'signIn' })
-      router.push('/dashboard')
+      setRedirectTo('/dashboard')
     } catch {
       setMessage('That code was wrong/expired, or the password is too short (8+ chars).')
     } finally {
@@ -190,7 +200,7 @@ function AuthPageInner() {
               )}
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || redirectTo !== null}
                 className="w-full bg-gradient-to-r from-green-500 to-green-400 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50"
               >
                 {loading ? 'Verifying…' : 'Verify & continue'}
@@ -198,7 +208,7 @@ function AuthPageInner() {
               <button
                 type="button"
                 onClick={handleResendVerify}
-                disabled={loading}
+                disabled={loading || redirectTo !== null}
                 className="w-full text-sm text-green-600 hover:text-green-700 disabled:opacity-50"
               >
                 Didn&apos;t get it? Resend code
@@ -231,7 +241,7 @@ function AuthPageInner() {
                     : 'bg-red-50 text-red-700 border border-red-200'
                 }`}>{message}</div>
               )}
-              <button type="submit" disabled={loading}
+              <button type="submit" disabled={loading || redirectTo !== null}
                 className="w-full bg-gradient-to-r from-green-500 to-green-400 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50">
                 {loading ? 'Sending…' : 'Send reset code'}
               </button>
@@ -272,11 +282,11 @@ function AuthPageInner() {
                     : 'bg-red-50 text-red-700 border border-red-200'
                 }`}>{message}</div>
               )}
-              <button type="submit" disabled={loading}
+              <button type="submit" disabled={loading || redirectTo !== null}
                 className="w-full bg-gradient-to-r from-green-500 to-green-400 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50">
                 {loading ? 'Resetting…' : 'Reset password & sign in'}
               </button>
-              <button type="button" onClick={handleResendReset} disabled={loading}
+              <button type="button" onClick={handleResendReset} disabled={loading || redirectTo !== null}
                 className="w-full text-sm text-green-600 hover:text-green-700 disabled:opacity-50">Didn&apos;t get it? Resend code</button>
               <button type="button" onClick={() => { setStep('credentials'); setMessage('') }}
                 className="w-full text-sm text-gray-500 hover:text-gray-700">← Back to sign in</button>
@@ -387,7 +397,7 @@ function AuthPageInner() {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || redirectTo !== null}
               className="w-full bg-gradient-to-r from-green-500 to-green-400 text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:transform-none"
             >
               {loading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Create Account')}
