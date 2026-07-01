@@ -104,6 +104,8 @@ function AuthPageInner() {
     setMessage('')
     try {
       await signIn('password', { email, code, newPassword, flow: 'reset-verification' })
+      // Belt-and-suspenders: sign in with the new password so they land straight in.
+      await signIn('password', { email, password: newPassword, flow: 'signIn' })
       router.push('/dashboard')
     } catch {
       setMessage('That code was wrong/expired, or the password is too short (8+ chars).')
