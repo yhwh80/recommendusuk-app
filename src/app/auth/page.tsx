@@ -20,6 +20,7 @@ function AuthPageInner() {
   >('credentials')
   const [code, setCode] = useState('')
   const [newPassword, setNewPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
   const { signIn } = useAuthActions()
   const router = useRouter()
@@ -76,6 +77,34 @@ function AuthPageInner() {
       router.push(role === 'client' ? '/dashboard/client' : '/dashboard/freelancer')
     } catch {
       setMessage('That code was wrong or expired. Check your email and try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Resend the signup verification code (re-triggers the signUp flow).
+  const handleResendVerify = async () => {
+    setLoading(true)
+    setMessage('')
+    try {
+      await signIn('password', { email, password, name, role, flow: 'signUp' })
+      setMessage('New code emailed — check your inbox (and spam).')
+    } catch {
+      setMessage('Could not resend right now. Wait a minute and try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Resend the password-reset code.
+  const handleResendReset = async () => {
+    setLoading(true)
+    setMessage('')
+    try {
+      await signIn('password', { email, flow: 'reset' })
+      setMessage('New reset code emailed — check your inbox (and spam).')
+    } catch {
+      setMessage('Could not resend right now. Wait a minute and try again.')
     } finally {
       setLoading(false)
     }
@@ -168,6 +197,14 @@ function AuthPageInner() {
               </button>
               <button
                 type="button"
+                onClick={handleResendVerify}
+                disabled={loading}
+                className="w-full text-sm text-green-600 hover:text-green-700 disabled:opacity-50"
+              >
+                Didn&apos;t get it? Resend code
+              </button>
+              <button
+                type="button"
                 onClick={() => { setStep('credentials'); setMessage('') }}
                 className="w-full text-sm text-gray-500 hover:text-gray-700"
               >
@@ -216,11 +253,17 @@ function AuthPageInner() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">New password</label>
-                <input
-                  type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={8}
-                  placeholder="At least 8 characters"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={8}
+                    placeholder="At least 8 characters"
+                    className="w-full px-4 py-3 pr-16 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                  <button type="button" onClick={() => setShowPassword((s) => !s)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 hover:text-green-600">
+                    {showPassword ? 'Hide' : 'Show'}
+                  </button>
+                </div>
               </div>
               {message && (
                 <div className={`p-4 rounded-lg text-sm ${
@@ -233,6 +276,8 @@ function AuthPageInner() {
                 className="w-full bg-gradient-to-r from-green-500 to-green-400 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50">
                 {loading ? 'Resetting…' : 'Reset password & sign in'}
               </button>
+              <button type="button" onClick={handleResendReset} disabled={loading}
+                className="w-full text-sm text-green-600 hover:text-green-700 disabled:opacity-50">Didn&apos;t get it? Resend code</button>
               <button type="button" onClick={() => { setStep('credentials'); setMessage('') }}
                 className="w-full text-sm text-gray-500 hover:text-gray-700">← Back to sign in</button>
             </form>
@@ -307,15 +352,24 @@ function AuthPageInner() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Password
               </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={8}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="Enter your password"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={8}
+                  className="w-full px-4 py-3 pr-16 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  placeholder="Enter your password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((s) => !s)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 hover:text-green-600"
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
               {!isLogin && (
                 <p className="text-sm text-gray-500 mt-1">Must be at least 8 characters</p>
               )}
