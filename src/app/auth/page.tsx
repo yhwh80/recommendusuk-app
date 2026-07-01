@@ -15,8 +15,11 @@ function AuthPageInner() {
   const [role, setRole] = useState<'client' | 'freelancer'>('client')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
-  const [step, setStep] = useState<'credentials' | 'verify'>('credentials')
+  const [step, setStep] = useState<
+    'credentials' | 'verify' | 'reset-request' | 'reset-code'
+  >('credentials')
   const [code, setCode] = useState('')
+  const [newPassword, setNewPassword] = useState('')
 
   const { signIn } = useAuthActions()
   const router = useRouter()
@@ -73,6 +76,37 @@ function AuthPageInner() {
       router.push(role === 'client' ? '/dashboard/client' : '/dashboard/freelancer')
     } catch {
       setMessage('That code was wrong or expired. Check your email and try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Forgot password — step 1: email the reset code.
+  const handleResetRequest = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setMessage('')
+    try {
+      await signIn('password', { email, flow: 'reset' })
+      setStep('reset-code')
+      setMessage('We emailed you a reset code — enter it with a new password.')
+    } catch {
+      setMessage('Could not send a reset code. Check the email address and try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Forgot password — step 2: verify the code + set the new password.
+  const handleResetVerify = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setMessage('')
+    try {
+      await signIn('password', { email, code, newPassword, flow: 'reset-verification' })
+      router.push('/dashboard')
+    } catch {
+      setMessage('That code was wrong/expired, or the password is too short (8+ chars).')
     } finally {
       setLoading(false)
     }
@@ -137,6 +171,68 @@ function AuthPageInner() {
               >
                 ← Use a different email
               </button>
+            </form>
+          ) : step === 'reset-request' ? (
+            <form onSubmit={handleResetRequest} className="space-y-4">
+              <p className="text-gray-600 text-sm">
+                Enter your account email and we&apos;ll send a reset code.
+              </p>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                <input
+                  type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="you@example.com"
+                />
+              </div>
+              {message && (
+                <div className={`p-4 rounded-lg text-sm ${
+                  message.includes('emailed')
+                    ? 'bg-green-50 text-green-700 border border-green-200'
+                    : 'bg-red-50 text-red-700 border border-red-200'
+                }`}>{message}</div>
+              )}
+              <button type="submit" disabled={loading}
+                className="w-full bg-gradient-to-r from-green-500 to-green-400 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50">
+                {loading ? 'Sending…' : 'Send reset code'}
+              </button>
+              <button type="button" onClick={() => { setStep('credentials'); setMessage('') }}
+                className="w-full text-sm text-gray-500 hover:text-gray-700">← Back to sign in</button>
+            </form>
+          ) : step === 'reset-code' ? (
+            <form onSubmit={handleResetVerify} className="space-y-4">
+              <p className="text-gray-600 text-sm">
+                Enter the code we emailed to <strong>{email}</strong> and choose a new password.
+              </p>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Reset code</label>
+                <input
+                  value={code} onChange={(e) => setCode(e.target.value)} required inputMode="numeric" maxLength={6}
+                  placeholder="123456"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg text-center text-2xl tracking-[0.4em] focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">New password</label>
+                <input
+                  type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={8}
+                  placeholder="At least 8 characters"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+              {message && (
+                <div className={`p-4 rounded-lg text-sm ${
+                  message.includes('emailed')
+                    ? 'bg-green-50 text-green-700 border border-green-200'
+                    : 'bg-red-50 text-red-700 border border-red-200'
+                }`}>{message}</div>
+              )}
+              <button type="submit" disabled={loading}
+                className="w-full bg-gradient-to-r from-green-500 to-green-400 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50">
+                {loading ? 'Resetting…' : 'Reset password & sign in'}
+              </button>
+              <button type="button" onClick={() => { setStep('credentials'); setMessage('') }}
+                className="w-full text-sm text-gray-500 hover:text-gray-700">← Back to sign in</button>
             </form>
           ) : (
           <>
@@ -241,6 +337,17 @@ function AuthPageInner() {
               {loading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Create Account')}
             </button>
           </form>
+
+          {isLogin && (
+            <div className="mt-3 text-center">
+              <button
+                onClick={() => { setStep('reset-request'); setMessage('') }}
+                className="text-sm text-gray-500 hover:text-green-600"
+              >
+                Forgot password?
+              </button>
+            </div>
+          )}
 
           {/* Toggle Login/Signup */}
           <div className="mt-6 text-center">
