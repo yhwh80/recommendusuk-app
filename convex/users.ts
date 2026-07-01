@@ -95,6 +95,35 @@ export const setProfileImage = mutation({
   },
 });
 
+// First-time role pick for Google sign-ups (they have no role yet). Sets the
+// role + free signup credits, once. Password sign-ups already have a role.
+export const completeOnboarding = mutation({
+  args: {
+    role: v.union(v.literal("client"), v.literal("freelancer")),
+  },
+  handler: async (ctx, { role }) => {
+    const userId = await getAuthUserId(ctx);
+    if (userId === null) throw new Error("Not authenticated");
+    const user = await ctx.db.get(userId);
+    if (!user) throw new Error("User not found");
+    if (user.role) return; // already onboarded — no double credits
+
+    const credits = role === "client" ? 25 : 10;
+    await ctx.db.patch(userId, {
+      role,
+      credits,
+      totalRating: 0,
+      totalJobsCompleted: 0,
+      isRecommended: false,
+    });
+    await ctx.db.insert("creditTransactions", {
+      userId,
+      amount: credits,
+      reason: "signup_bonus",
+    });
+  },
+});
+
 // Update own profile (name, picture, bio, skills, hourly rate, location).
 export const updateProfile = mutation({
   args: {

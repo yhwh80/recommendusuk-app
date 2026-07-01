@@ -1,4 +1,5 @@
 import { Password } from "@convex-dev/auth/providers/Password";
+import Google from "@auth/core/providers/google";
 import { convexAuth } from "@convex-dev/auth/server";
 import { ResendOTP } from "./ResendOTP";
 import { ResendOTPPasswordReset } from "./ResendOTPPasswordReset";
@@ -27,6 +28,9 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
         };
       },
     }),
+    // "Sign in with Google". Google users don't tell us Hire vs Work, so they
+    // pick a role on /onboarding after first sign-in (which grants credits).
+    Google,
   ],
   callbacks: {
     // On first creation only, record the signup credits in the ledger so the

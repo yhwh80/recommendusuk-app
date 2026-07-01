@@ -22,6 +22,11 @@ export default function DashboardRedirect() {
       router.replace('/auth')
       return
     }
+    if (!user.role) {
+      // Google sign-ups arrive without a role — pick one first.
+      router.replace('/onboarding')
+      return
+    }
     router.replace(
       user.role === 'freelancer' ? '/dashboard/freelancer' : '/dashboard/client',
     )
