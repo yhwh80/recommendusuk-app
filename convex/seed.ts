@@ -51,6 +51,25 @@ export const deleteUserByEmail = internalMutation({
   },
 });
 
+// THE REAL fix: Convex Auth gates sign-in on authAccounts.emailVerified (the
+// credential), NOT users.emailVerificationTime. Grandfather that field so
+// pre-verification password accounts can log in. Run on prod + dev.
+//   npx convex run seed:grandfatherAccountsVerified --prod
+export const grandfatherAccountsVerified = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const accounts = await ctx.db.query("authAccounts").collect();
+    let n = 0;
+    for (const a of accounts) {
+      if (a.provider === "password" && !a.emailVerified) {
+        await ctx.db.patch(a._id, { emailVerified: a.providerAccountId });
+        n++;
+      }
+    }
+    return `Marked ${n} password account(s) as verified.`;
+  },
+});
+
 // Grandfather existing accounts (created before email verification was added)
 // as verified, so they can still log in. New signups still verify by code.
 //   npx convex run seed:grandfatherVerified --prod
