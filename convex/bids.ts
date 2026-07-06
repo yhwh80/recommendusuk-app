@@ -105,6 +105,13 @@ export const create = mutation({
       message: `New proposal on "${job.title}"`,
       link: `/jobs/${jobId}`,
     });
+    // Confirmation to the freelancer who bid.
+    await notify(ctx, {
+      userId,
+      type: "bid_submitted",
+      message: `Your proposal for "${job.title}" was submitted`,
+      link: `/jobs/${jobId}`,
+    });
     return bidId;
   },
 });

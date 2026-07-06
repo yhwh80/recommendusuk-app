@@ -127,6 +127,7 @@ export default defineSchema({
     userId: v.id("users"),
     type: v.union(
       v.literal("bid_accepted"),
+      v.literal("bid_submitted"),
       v.literal("new_bid"),
       v.literal("new_review"),
       v.literal("job_completed"),

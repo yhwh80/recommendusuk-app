@@ -1,11 +1,26 @@
 import { query, mutation, MutationCtx } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { Id } from "./_generated/dataModel";
+import { internal } from "./_generated/api";
 
-type NotifType = "bid_accepted" | "new_bid" | "new_review" | "job_completed";
+type NotifType =
+  | "bid_accepted"
+  | "bid_submitted"
+  | "new_bid"
+  | "new_review"
+  | "job_completed";
 
-// Shared helper — called from other mutations (acceptBid, complete, bids.create,
-// ratings.create) to drop a notification for a user. Not a public function.
+// Email subject per notification type.
+const EMAIL_SUBJECT: Record<NotifType, string> = {
+  bid_accepted: "🎉 Your proposal was accepted!",
+  bid_submitted: "Your proposal was submitted ✅",
+  new_bid: "New proposal on your job",
+  new_review: "You received a review ⭐",
+  job_completed: "A job was marked complete",
+};
+
+// Shared helper — drops an in-app notification AND emails the user (via Resend).
+// Called from acceptBid, complete, bids.create, ratings.create.
 export async function notify(
   ctx: MutationCtx,
   args: { userId: Id<"users">; type: NotifType; message: string; link?: string },
@@ -16,6 +31,18 @@ export async function notify(
     message: args.message,
     link: args.link,
   });
+
+  const user = await ctx.db.get(args.userId);
+  if (user?.email) {
+    await ctx.scheduler.runAfter(0, internal.emails.sendUserEmail, {
+      to: user.email,
+      subject: EMAIL_SUBJECT[args.type],
+      text:
+        `${args.message}\n\n` +
+        `View it here: https://recommendusjobsuk.com${args.link ?? ""}\n\n` +
+        `— RecommendUsJobsUK`,
+    });
+  }
 }
 
 // Current user's notifications, newest first.

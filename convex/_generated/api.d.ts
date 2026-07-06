@@ -15,6 +15,7 @@ import type * as auth from "../auth.js";
 import type * as bids from "../bids.js";
 import type * as categories from "../categories.js";
 import type * as creditTransactions from "../creditTransactions.js";
+import type * as emails from "../emails.js";
 import type * as http from "../http.js";
 import type * as jobs from "../jobs.js";
 import type * as messages from "../messages.js";
@@ -39,6 +40,7 @@ declare const fullApi: ApiFromModules<{
   bids: typeof bids;
   categories: typeof categories;
   creditTransactions: typeof creditTransactions;
+  emails: typeof emails;
   http: typeof http;
   jobs: typeof jobs;
   messages: typeof messages;
