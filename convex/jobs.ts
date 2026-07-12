@@ -37,6 +37,45 @@ export const list = query({
   },
 });
 
+// Job leads for the current freelancer: open jobs, with the ones matching their
+// skills (or area) shown first and flagged. Powers the "Job Leads for you" feed.
+export const leadsForMe = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (userId === null) return [];
+    const me = await ctx.db.get(userId);
+    const mySkills = (me?.skills ?? []).map((s) => s.toLowerCase());
+    const myArea = (me?.location ?? "").toLowerCase().trim();
+
+    const open = await ctx.db
+      .query("jobs")
+      .withIndex("by_status", (q) => q.eq("status", "open"))
+      .order("desc")
+      .collect();
+
+    const enriched = await Promise.all(
+      open.map(async (job) => {
+        const jobSkills = (job.skills ?? []).map((s) => s.toLowerCase());
+        const skillMatch =
+          mySkills.length > 0 && jobSkills.some((s) => mySkills.includes(s));
+        const areaMatch =
+          !!myArea &&
+          !!job.location &&
+          job.location.toLowerCase().includes(myArea);
+        return {
+          ...job,
+          clientName: (await ctx.db.get(job.clientId))?.name ?? null,
+          matchesYou: skillMatch || areaMatch,
+        };
+      }),
+    );
+    // Matching leads first (recency preserved within each group).
+    enriched.sort((a, b) => Number(b.matchesYou) - Number(a.matchesYou));
+    return enriched;
+  },
+});
+
 // Jobs posted by the current client (client dashboard).
 export const listMine = query({
   args: {},

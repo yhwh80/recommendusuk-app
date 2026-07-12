@@ -11,7 +11,7 @@ import { useCurrentUser } from '@/lib/useCurrentUser'
 export default function FreelancerDashboard() {
   const { isLoading, isAuthenticated } = useConvexAuth()
   const user = useCurrentUser()
-  const availableJobs = useQuery(api.jobs.listOpen)
+  const jobLeads = useQuery(api.jobs.leadsForMe)
   const myBids = useQuery(api.bids.listMine)
   const unread = useQuery(api.messages.unreadCount)
   const notifUnread = useQuery(api.notifications.unreadCount)
@@ -31,7 +31,7 @@ export default function FreelancerDashboard() {
   if (
     isLoading ||
     user === undefined ||
-    availableJobs === undefined ||
+    jobLeads === undefined ||
     myBids === undefined
   ) {
     return (
@@ -138,7 +138,7 @@ export default function FreelancerDashboard() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-xl shadow-sm border">
+          <Link href="/my-bids" className="bg-white p-6 rounded-xl shadow-sm border hover:border-green-300 hover:shadow-md transition-all">
             <div className="flex items-center">
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <span className="text-2xl">💷</span>
@@ -148,9 +148,9 @@ export default function FreelancerDashboard() {
                 <p className="text-2xl font-bold text-gray-900">£{totalEarned.toLocaleString()}</p>
               </div>
             </div>
-          </div>
+          </Link>
 
-          <div className="bg-white p-6 rounded-xl shadow-sm border">
+          <Link href="/buy-credits" className="bg-white p-6 rounded-xl shadow-sm border hover:border-green-300 hover:shadow-md transition-all">
             <div className="flex items-center">
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <span className="text-2xl">💳</span>
@@ -158,11 +158,12 @@ export default function FreelancerDashboard() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Your Credits</p>
                 <p className="text-2xl font-bold text-gray-900">{user.credits}</p>
+                <p className="text-xs text-green-600 font-medium">Tap to buy more →</p>
               </div>
             </div>
-          </div>
+          </Link>
 
-          <div className="bg-white p-6 rounded-xl shadow-sm border">
+          <Link href="/my-bids" className="bg-white p-6 rounded-xl shadow-sm border hover:border-green-300 hover:shadow-md transition-all">
             <div className="flex items-center">
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <span className="text-2xl">📋</span>
@@ -172,9 +173,9 @@ export default function FreelancerDashboard() {
                 <p className="text-2xl font-bold text-gray-900">{pendingBids}</p>
               </div>
             </div>
-          </div>
+          </Link>
 
-          <div className="bg-white p-6 rounded-xl shadow-sm border">
+          <Link href="/my-bids" className="bg-white p-6 rounded-xl shadow-sm border hover:border-green-300 hover:shadow-md transition-all">
             <div className="flex items-center">
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <span className="text-2xl">🏆</span>
@@ -184,9 +185,9 @@ export default function FreelancerDashboard() {
                 <p className="text-2xl font-bold text-gray-900">{wonBids}</p>
               </div>
             </div>
-          </div>
+          </Link>
 
-          <div className="bg-white p-6 rounded-xl shadow-sm border">
+          <Link href={`/profile/${user._id}`} className="bg-white p-6 rounded-xl shadow-sm border hover:border-green-300 hover:shadow-md transition-all">
             <div className="flex items-center">
               <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
                 <span className="text-2xl">⭐</span>
@@ -196,7 +197,7 @@ export default function FreelancerDashboard() {
                 <p className="text-2xl font-bold text-gray-900">{(user.totalRating ?? 0).toFixed(1)}</p>
               </div>
             </div>
-          </div>
+          </Link>
         </div>
 
         {/* Quick Actions */}
@@ -245,37 +246,44 @@ export default function FreelancerDashboard() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Available Jobs */}
+          {/* Job Leads */}
           <div className="bg-white rounded-xl shadow-sm border p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">Latest Jobs</h2>
-              <Link href="/jobs" className="text-green-600 hover:text-green-800 font-medium">
-                View All →
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Job Leads for you</h2>
+                <p className="text-sm text-gray-500">Matches to your skills &amp; area show first</p>
+              </div>
+              <Link href="/jobs" className="text-green-600 hover:text-green-800 font-medium whitespace-nowrap">
+                See all →
               </Link>
             </div>
 
-            {availableJobs.length === 0 ? (
+            {jobLeads.length === 0 ? (
               <div className="text-center py-8">
                 <div className="text-4xl mb-3">🔍</div>
-                <p className="text-gray-600">No jobs available right now</p>
+                <p className="text-gray-600">No open job leads right now — check back soon.</p>
               </div>
             ) : (
               <div className="space-y-4">
-                {availableJobs.slice(0, 5).map((job) => (
-                  <div key={job._id} className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
-                    <h3 className="font-semibold text-gray-900 mb-2">{job.title}</h3>
+                {jobLeads.slice(0, 5).map((job) => (
+                  <div key={job._id} className={`border rounded-lg p-4 hover:shadow-sm transition-shadow ${job.matchesYou ? 'border-green-300 bg-green-50/50' : 'border-gray-200'}`}>
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <h3 className="font-semibold text-gray-900">{job.title}</h3>
+                      {job.matchesYou && (
+                        <span className="shrink-0 text-xs font-medium text-green-700 bg-green-100 px-2 py-0.5 rounded-full">✓ Matches you</span>
+                      )}
+                    </div>
                     <p className="text-gray-600 text-sm mb-3 line-clamp-2">{job.description}</p>
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4 text-sm text-gray-500">
+                      <div className="flex items-center space-x-3 text-sm text-gray-500">
                         <span>£{(job.budgetMin / 100).toLocaleString()} - £{(job.budgetMax / 100).toLocaleString()}</span>
-                        <span>•</span>
-                        <span>{job.currentBids}/{job.maxBids} bids</span>
+                        {job.location && <><span>•</span><span>📍 {job.location}</span></>}
                       </div>
                       <Link
                         href={`/jobs/${job._id}`}
-                        className="text-green-600 hover:text-green-800 font-medium text-sm"
+                        className="text-green-600 hover:text-green-800 font-medium text-sm whitespace-nowrap"
                       >
-                        View & Bid →
+                        View &amp; Bid →
                       </Link>
                     </div>
                   </div>

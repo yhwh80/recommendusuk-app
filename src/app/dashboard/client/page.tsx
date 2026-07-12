@@ -133,7 +133,7 @@ export default function ClientDashboard() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-xl shadow-sm border">
+          <Link href="/buy-credits" className="bg-white p-6 rounded-xl shadow-sm border hover:border-green-300 hover:shadow-md transition-all">
             <div className="flex items-center">
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <span className="text-2xl">💳</span>
@@ -141,11 +141,12 @@ export default function ClientDashboard() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Your Credits</p>
                 <p className="text-2xl font-bold text-gray-900">{user.credits}</p>
+                <p className="text-xs text-green-600 font-medium">Tap to buy more →</p>
               </div>
             </div>
-          </div>
+          </Link>
 
-          <div className="bg-white p-6 rounded-xl shadow-sm border">
+          <Link href="/my-jobs" className="bg-white p-6 rounded-xl shadow-sm border hover:border-green-300 hover:shadow-md transition-all">
             <div className="flex items-center">
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <span className="text-2xl">📋</span>
@@ -155,9 +156,9 @@ export default function ClientDashboard() {
                 <p className="text-2xl font-bold text-gray-900">{activeJobs}</p>
               </div>
             </div>
-          </div>
+          </Link>
 
-          <div className="bg-white p-6 rounded-xl shadow-sm border">
+          <Link href="/my-jobs" className="bg-white p-6 rounded-xl shadow-sm border hover:border-green-300 hover:shadow-md transition-all">
             <div className="flex items-center">
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <span className="text-2xl">✅</span>
@@ -167,9 +168,9 @@ export default function ClientDashboard() {
                 <p className="text-2xl font-bold text-gray-900">{completedJobs}</p>
               </div>
             </div>
-          </div>
+          </Link>
 
-          <div className="bg-white p-6 rounded-xl shadow-sm border">
+          <Link href="/my-jobs" className="bg-white p-6 rounded-xl shadow-sm border hover:border-green-300 hover:shadow-md transition-all">
             <div className="flex items-center">
               <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
                 <span className="text-2xl">💰</span>
@@ -179,7 +180,7 @@ export default function ClientDashboard() {
                 <p className="text-2xl font-bold text-gray-900">{totalSpent} credits</p>
               </div>
             </div>
-          </div>
+          </Link>
         </div>
 
         {/* Quick Actions */}
