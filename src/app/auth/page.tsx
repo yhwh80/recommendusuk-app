@@ -5,6 +5,7 @@ import { useAuthActions } from '@convex-dev/auth/react'
 import { useConvexAuth } from 'convex/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { InAppBrowserNotice } from '@/components/InAppBrowserNotice'
 
 export const dynamic = 'force-dynamic'
 
@@ -172,6 +173,10 @@ function AuthPageInner() {
             {isLogin ? 'Sign in to your account' : 'Create your account and get started'}
           </p>
         </div>
+
+        {/* Warns + gives an escape hatch when opened in an in-app browser
+            (WhatsApp/Instagram/etc.) where Google sign-in silently fails. */}
+        <InAppBrowserNotice />
 
         {/* Auth Form */}
         <div className="bg-white rounded-2xl shadow-lg p-8">

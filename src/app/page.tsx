@@ -2,9 +2,16 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
+import { useConvexAuth } from 'convex/react'
+import { useAuthActions } from '@convex-dev/auth/react'
 
 // Green landing page — ported from the static-marketplace "latest" design.
 export default function Home() {
+  // Reflect login state in the header so a signed-in visitor who lands back on
+  // the homepage (e.g. after the Google OAuth redirect) sees a way through to
+  // their dashboard — not a "Sign in" button that makes them re-loop the login.
+  const { isLoading: authLoading, isAuthenticated } = useConvexAuth()
+  const { signOut } = useAuthActions()
   // Staggered fade/slide/blur-in on load (replaces the original inline script).
   useEffect(() => {
     const els = Array.from(document.querySelectorAll('[data-animate]'))
@@ -37,8 +44,17 @@ export default function Home() {
               <span className="text-lg font-semibold text-gray-900 tracking-tight">RecommendUsUK</span>
             </div>
             <div className="flex items-center space-x-4">
-              <Link href="/auth" className="text-gray-600 hover:text-green-500 font-medium transition-colors duration-150">Sign in</Link>
-              <Link href="/auth?signup=true" className="bg-green-400 text-white px-4 py-2 rounded-lg hover:bg-green-500 transition-colors duration-150 shadow-sm font-medium">Join now</Link>
+              {authLoading ? null : isAuthenticated ? (
+                <>
+                  <Link href="/dashboard" className="text-gray-600 hover:text-green-500 font-medium transition-colors duration-150">Dashboard</Link>
+                  <button onClick={() => signOut()} className="bg-green-400 text-white px-4 py-2 rounded-lg hover:bg-green-500 transition-colors duration-150 shadow-sm font-medium">Sign out</button>
+                </>
+              ) : (
+                <>
+                  <Link href="/auth" className="text-gray-600 hover:text-green-500 font-medium transition-colors duration-150">Sign in</Link>
+                  <Link href="/auth?signup=true" className="bg-green-400 text-white px-4 py-2 rounded-lg hover:bg-green-500 transition-colors duration-150 shadow-sm font-medium">Join now</Link>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -150,8 +166,8 @@ export default function Home() {
               <h3 className="font-semibold mb-4">For Clients</h3>
               <ul className="space-y-2 text-gray-400">
                 <li><Link href="/post-job" className="hover:text-green-300 transition-colors">Post a Job</Link></li>
-                <li><Link href="/jobs" className="hover:text-green-300 transition-colors">Browse Freelancers</Link></li>
-                <li><Link href="/auth?signup=true" className="hover:text-green-300 transition-colors">How it Works</Link></li>
+                <li><Link href="/freelancers" className="hover:text-green-300 transition-colors">Browse Freelancers</Link></li>
+                <li><Link href="/how-it-works" className="hover:text-green-300 transition-colors">How it Works</Link></li>
               </ul>
             </div>
             <div>
@@ -159,20 +175,20 @@ export default function Home() {
               <ul className="space-y-2 text-gray-400">
                 <li><Link href="/jobs" className="hover:text-green-300 transition-colors">Find Jobs</Link></li>
                 <li><Link href="/auth?type=freelancer" className="hover:text-green-300 transition-colors">Build Profile</Link></li>
-                <li><Link href="/jobs" className="hover:text-green-300 transition-colors">Success Stories</Link></li>
+                <li><Link href="/freelancers" className="hover:text-green-300 transition-colors">Recommended Pros</Link></li>
               </ul>
             </div>
             <div>
               <h3 className="font-semibold mb-4">Support</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><Link href="/" className="hover:text-green-300 transition-colors">Help Center</Link></li>
-                <li><Link href="/" className="hover:text-green-300 transition-colors">Contact Us</Link></li>
-                <li><Link href="/" className="hover:text-green-300 transition-colors">Terms of Service</Link></li>
+                <li><Link href="/faq" className="hover:text-green-300 transition-colors">Help Center</Link></li>
+                <li><Link href="/contact" className="hover:text-green-300 transition-colors">Contact Us</Link></li>
+                <li><Link href="/terms" className="hover:text-green-300 transition-colors">Terms of Service</Link></li>
               </ul>
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>© 2025 RecommendUsUK. All rights reserved.</p>
+            <p>© 2026 RecommendUsUK. All rights reserved.</p>
           </div>
         </div>
       </footer>
