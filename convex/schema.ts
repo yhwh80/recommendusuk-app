@@ -145,6 +145,17 @@ export default defineSchema({
     readAt: v.optional(v.number()),
   }).index("by_user", ["userId"]),
 
+  // Messages sent through the public /contact form. Kept as a record so
+  // nothing is lost if the notification email fails or gets buried.
+  contactMessages: defineTable({
+    name: v.string(),
+    email: v.string(),
+    message: v.string(),
+    // Set when the sender happened to be signed in.
+    userId: v.optional(v.id("users")),
+    handledAt: v.optional(v.number()),
+  }).index("by_email", ["email"]),
+
   // Direct messages between users, optionally tied to a job.
   messages: defineTable({
     jobId: v.optional(v.id("jobs")),

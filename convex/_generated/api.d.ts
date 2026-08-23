@@ -14,6 +14,7 @@ import type * as adminAlerts from "../adminAlerts.js";
 import type * as auth from "../auth.js";
 import type * as bids from "../bids.js";
 import type * as categories from "../categories.js";
+import type * as contact from "../contact.js";
 import type * as creditTransactions from "../creditTransactions.js";
 import type * as emails from "../emails.js";
 import type * as http from "../http.js";
@@ -41,6 +42,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   bids: typeof bids;
   categories: typeof categories;
+  contact: typeof contact;
   creditTransactions: typeof creditTransactions;
   emails: typeof emails;
   http: typeof http;
