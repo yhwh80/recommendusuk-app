@@ -13,10 +13,21 @@ const isPlaceholder = (value: string | undefined) =>
 export const STRIPE_CONFIGURED =
   !isPlaceholder(secret) && !isPlaceholder(webhookSecret)
 
+// Every package needs a real Stripe Price. Test and live mode hold separate
+// price objects, so these IDs differ per deployment and are set by
+// `npm run stripe:products`.
+export const PRICES_CONFIGURED = [
+  process.env.STRIPE_PRICE_CREDITS_10,
+  process.env.STRIPE_PRICE_CREDITS_25,
+  process.env.STRIPE_PRICE_CREDITS_50,
+  process.env.STRIPE_PRICE_CREDITS_100,
+].every((id) => id?.startsWith('price_'))
+
 // Credits are granted from a Convex internal mutation that must be reached via
 // a signature-verifying Convex httpAction. Until that refactor lands there is
 // no safe path from a paid Stripe session to a credit balance, so checkout
 // stays closed even if the keys above are present.
 export const CREDIT_FULFILMENT_WIRED = false
 
-export const PAYMENTS_ENABLED = STRIPE_CONFIGURED && CREDIT_FULFILMENT_WIRED
+export const PAYMENTS_ENABLED =
+  STRIPE_CONFIGURED && PRICES_CONFIGURED && CREDIT_FULFILMENT_WIRED

@@ -36,23 +36,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create Stripe checkout session for production
+    if (!creditPackage.priceId) {
+      return NextResponse.json(
+        { error: 'Card payments are not enabled yet.', code: 'payments_disabled' },
+        { status: 503 },
+      )
+    }
+
+    // Reference the pre-created Stripe Price. Using inline `price_data` here
+    // would mint a throwaway Product on every purchase, which quickly makes
+    // the Stripe catalogue and per-product reporting useless.
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'gbp',
-            product_data: {
-              name: `${creditPackage.name} - RecommendUsUK Marketplace`,
-              description: `Purchase ${creditPackage.credits} credits for posting jobs`,
-              images: ['https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=300&h=300&fit=crop&crop=center'],
-            },
-            unit_amount: Math.round(creditPackage.price * 100), // Convert to pence
-          },
-          quantity: 1,
-        },
-      ],
+      line_items: [{ price: creditPackage.priceId, quantity: 1 }],
       mode: 'payment',
       success_url: `${request.nextUrl.origin}/buy-credits/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${request.nextUrl.origin}/buy-credits?cancelled=true`,

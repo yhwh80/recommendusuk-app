@@ -16,14 +16,17 @@ export const stripe = new Stripe(stripeApiKey, {
   protocol: process.env.STRIPE_API_BASE ? new URL(process.env.STRIPE_API_BASE).protocol.replace(':', '') as 'http' | 'https' : undefined,
 })
 
-// Credit packages configuration
+// Credit packages configuration.
+// `priceId` is populated from Stripe by `npm run stripe:products` and is
+// server-only, so it is undefined in the browser — the client uses this list
+// purely for display. Keep amounts here in step with the setup script.
 export const CREDIT_PACKAGES = [
   {
     id: 'credits_10',
     name: '10 Credits',
     credits: 10,
     price: 5.00, // £5
-    priceId: process.env.STRIPE_PRICE_CREDITS_10 || 'price_mock_credits_10',
+    priceId: process.env.STRIPE_PRICE_CREDITS_10,
     popular: false,
   },
   {
@@ -31,7 +34,7 @@ export const CREDIT_PACKAGES = [
     name: '25 Credits',
     credits: 25,
     price: 10.00, // £10
-    priceId: process.env.STRIPE_PRICE_CREDITS_25 || 'price_mock_credits_25',
+    priceId: process.env.STRIPE_PRICE_CREDITS_25,
     popular: true,
   },
   {
@@ -39,7 +42,7 @@ export const CREDIT_PACKAGES = [
     name: '50 Credits',
     credits: 50,
     price: 18.00, // £18 (10% discount)
-    priceId: process.env.STRIPE_PRICE_CREDITS_50 || 'price_mock_credits_50',
+    priceId: process.env.STRIPE_PRICE_CREDITS_50,
     popular: false,
   },
   {
@@ -47,7 +50,7 @@ export const CREDIT_PACKAGES = [
     name: '100 Credits',
     credits: 100,
     price: 32.00, // £32 (20% discount)
-    priceId: process.env.STRIPE_PRICE_CREDITS_100 || 'price_mock_credits_100',
+    priceId: process.env.STRIPE_PRICE_CREDITS_100,
     popular: false,
   },
 ]

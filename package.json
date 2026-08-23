@@ -8,7 +8,8 @@
     "build": "NODE_OPTIONS=--no-experimental-webstorage next build",
     "start": "NODE_OPTIONS=--no-experimental-webstorage next start",
     "lint": "next lint",
-    "seed": "convex run seed:run"
+    "seed": "convex run seed:run",
+    "stripe:products": "node scripts/setup-stripe-products.mjs"
   },
   "dependencies": {
     "@convex-dev/auth": "^0.0.80",
