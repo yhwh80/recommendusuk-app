@@ -10,7 +10,8 @@
     "lint": "next lint",
     "seed": "convex run seed:run",
     "stripe:products": "node scripts/setup-stripe-products.mjs",
-    "stripe:webhook": "node scripts/setup-stripe-webhook.mjs"
+    "stripe:webhook": "node scripts/setup-stripe-webhook.mjs",
+    "stripe:golive": "node scripts/stripe-go-live.mjs"
   },
   "dependencies": {
     "@convex-dev/auth": "^0.0.80",
