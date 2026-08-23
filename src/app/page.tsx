@@ -184,6 +184,7 @@ export default function Home() {
                 <li><Link href="/faq" className="hover:text-green-300 transition-colors">Help Center</Link></li>
                 <li><Link href="/contact" className="hover:text-green-300 transition-colors">Contact Us</Link></li>
                 <li><Link href="/terms" className="hover:text-green-300 transition-colors">Terms of Service</Link></li>
+                <li><Link href="/privacy" className="hover:text-green-300 transition-colors">Privacy Policy</Link></li>
               </ul>
             </div>
           </div>
