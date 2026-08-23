@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe, CREDIT_PACKAGES } from '@/lib/stripe'
+import { PAYMENTS_ENABLED } from '@/lib/stripeConfig'
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,13 +22,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if we're in mock mode
-    const isMockMode = process.env.STRIPE_SECRET_KEY === 'sk_test_mock' || process.env.STRIPE_API_BASE
-
-    if (isMockMode) {
-      // In mock mode, return a fake session ID and redirect to success
-      const mockSessionId = `cs_test_mock_${Date.now()}_${packageId}`
-      return NextResponse.json({ sessionId: mockSessionId })
+    // Card payments are switched off until real Stripe keys are set AND the
+    // Convex fulfilment path is wired. Previously an unset STRIPE_SECRET_KEY
+    // fell through to a live Stripe call with the literal string
+    // 'sk_test_mock', which 500'd in production.
+    if (!PAYMENTS_ENABLED) {
+      return NextResponse.json(
+        {
+          error: 'Card payments are not enabled yet.',
+          code: 'payments_disabled',
+        },
+        { status: 503 },
+      )
     }
 
     // Create Stripe checkout session for production
@@ -55,6 +61,8 @@ export async function POST(request: NextRequest) {
         packageId,
         credits: creditPackage.credits.toString(),
       },
+      // TODO: pass the signed-in user's email so Stripe emails a receipt
+      //       (the success page already tells them one was sent).
       customer_email: undefined,
       allow_promotion_codes: true,
     })

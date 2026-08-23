@@ -2,18 +2,17 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { useConvexAuth, useMutation } from 'convex/react'
+import { useConvexAuth } from 'convex/react'
 import { stripePromise, CREDIT_PACKAGES } from '@/lib/stripe'
-import { api } from '../../../convex/_generated/api'
 import { useCurrentUser } from '@/lib/useCurrentUser'
 import { SiteHeader } from '@/components/SiteHeader'
 
 export default function BuyCreditsPage() {
   const { isLoading, isAuthenticated } = useConvexAuth()
   const user = useCurrentUser()
-  const purchaseMock = useMutation(api.creditTransactions.purchaseMock)
   const [processingPackage, setProcessingPackage] = useState<string | null>(null)
+  const [paymentsDisabled, setPaymentsDisabled] = useState(false)
+  const [purchaseError, setPurchaseError] = useState<string | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -24,6 +23,8 @@ export default function BuyCreditsPage() {
     if (!user) return
     setProcessingPackage(packageId)
 
+    setPurchaseError(null)
+
     try {
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
@@ -31,31 +32,29 @@ export default function BuyCreditsPage() {
         body: JSON.stringify({ packageId, userId: user._id }),
       })
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to create checkout session')
+      const data = await response.json()
+
+      // Payments are switched off until Stripe is set up — show a calm notice
+      // rather than an error alert.
+      if (response.status === 503 || data?.code === 'payments_disabled') {
+        setPaymentsDisabled(true)
+        return
       }
 
-      const { sessionId } = await response.json()
-
-      // Mock mode (no real Stripe keys): credit the account directly via Convex.
-      if (sessionId.includes('mock')) {
-        const selectedPackage = CREDIT_PACKAGES.find((pkg) => pkg.id === packageId)
-        if (selectedPackage) {
-          await purchaseMock({ credits: selectedPackage.credits })
-          router.push(`/buy-credits/success?session_id=${sessionId}&mock=true`)
-          return
-        }
+      if (!response.ok) {
+        throw new Error(data?.error || 'Failed to create checkout session')
       }
 
       // Production Stripe checkout.
       const stripe = await stripePromise
       if (!stripe) throw new Error('Stripe failed to load')
-      const { error } = await stripe.redirectToCheckout({ sessionId })
+      const { error } = await stripe.redirectToCheckout({ sessionId: data.sessionId })
       if (error) throw error
     } catch (error: unknown) {
       console.error('Error:', error)
-      alert(error instanceof Error ? error.message : 'Failed to process payment')
+      setPurchaseError(
+        error instanceof Error ? error.message : 'Failed to process payment',
+      )
     } finally {
       setProcessingPackage(null)
     }
@@ -128,6 +127,27 @@ export default function BuyCreditsPage() {
           </div>
         </div>
 
+        {paymentsDisabled && (
+          <div className="mb-8 rounded-lg border border-amber-200 bg-amber-50 p-6">
+            <h3 className="font-semibold text-amber-900 mb-1">
+              Card payments are coming soon
+            </h3>
+            <p className="text-sm text-amber-800">
+              We&apos;re finishing our payment setup. Credit packages aren&apos;t on sale
+              just yet — your existing credits are unaffected. Please check back shortly.
+            </p>
+          </div>
+        )}
+
+        {purchaseError && (
+          <div className="mb-8 rounded-lg border border-red-200 bg-red-50 p-6">
+            <h3 className="font-semibold text-red-900 mb-1">
+              Something went wrong
+            </h3>
+            <p className="text-sm text-red-800">{purchaseError}</p>
+          </div>
+        )}
+
         {/* Credit Packages */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {CREDIT_PACKAGES.map((pkg) => (
@@ -175,7 +195,7 @@ export default function BuyCreditsPage() {
 
                 <button
                   onClick={() => handlePurchase(pkg.id)}
-                  disabled={processingPackage === pkg.id}
+                  disabled={processingPackage === pkg.id || paymentsDisabled}
                   className={`w-full py-3 rounded-lg font-semibold transition-colors ${
                     pkg.popular
                       ? 'bg-green-600 text-white hover:bg-green-700'
@@ -187,6 +207,8 @@ export default function BuyCreditsPage() {
                       <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent"></div>
                       <span>Processing...</span>
                     </div>
+                  ) : paymentsDisabled ? (
+                    'Coming soon'
                   ) : (
                     'Buy Now'
                   )}

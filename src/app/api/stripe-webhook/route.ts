@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
-import { ConvexHttpClient } from 'convex/browser'
-import { api } from '../../../../convex/_generated/api'
-import { Id } from '../../../../convex/_generated/dataModel'
+import { STRIPE_CONFIGURED, CREDIT_FULFILMENT_WIRED } from '@/lib/stripeConfig'
 import Stripe from 'stripe'
 
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
-
 export async function POST(request: NextRequest) {
+  if (!STRIPE_CONFIGURED) {
+    // No keys set, so no signature to verify and nothing legitimate to process.
+    return NextResponse.json(
+      { error: 'Stripe is not configured on this deployment' },
+      { status: 503 },
+    )
+  }
+
   const body = await request.text()
   const signature = request.headers.get('stripe-signature')
 
@@ -47,14 +51,22 @@ export async function POST(request: NextRequest) {
             break
           }
 
-          // Atomically add credits + write a ledger row in Convex.
-          await convex.mutation(api.creditTransactions.recordPurchase, {
-            userId: userId as Id<'users'>,
-            amount: parseInt(credits),
-            stripeReference: session.id,
-          })
+          if (!CREDIT_FULFILMENT_WIRED) {
+            // `recordPurchase` is an internalMutation and cannot be reached
+            // from here — it must be called by a Convex httpAction that
+            // verifies the Stripe signature itself. Fail loudly (Stripe will
+            // retry and surface the failure in the dashboard) rather than
+            // silently swallowing a paid session.
+            console.error(
+              `Paid session ${session.id} could not be credited: Convex fulfilment not wired`,
+            )
+            return NextResponse.json(
+              { error: 'Credit fulfilment not wired' },
+              { status: 500 },
+            )
+          }
 
-          console.log(`Added ${credits} credits to user ${userId}`)
+          console.log(`Would add ${credits} credits to user ${userId}`)
         }
         break
       }

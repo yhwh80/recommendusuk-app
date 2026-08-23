@@ -111,7 +111,10 @@ export default defineSchema({
     ),
     jobId: v.optional(v.id("jobs")),
     stripeReference: v.optional(v.string()),
-  }).index("by_user", ["userId"]),
+  })
+    .index("by_user", ["userId"])
+    // Lets a purchase check whether this Stripe session was already credited.
+    .index("by_stripeReference", ["stripeReference"]),
 
   // Portfolio / work samples — photos AND videos a pro or advertiser uploads.
   portfolio: defineTable({
