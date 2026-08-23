@@ -156,7 +156,7 @@ export default function PostJobPage() {
                 className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="Describe your project in detail. Include requirements, timeline, and any specific technologies or skills needed..."
               />
-              <p className="text-sm text-gray-500 mt-1">The more details you provide, the better proposals you'll receive</p>
+              <p className="text-sm text-gray-500 mt-1">The more details you provide, the better proposals you&apos;ll receive</p>
             </div>
 
             <div>
