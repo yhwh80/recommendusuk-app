@@ -24,6 +24,7 @@ import type * as portfolio from "../portfolio.js";
 import type * as ratings from "../ratings.js";
 import type * as seed from "../seed.js";
 import type * as stats from "../stats.js";
+import type * as stripe from "../stripe.js";
 import type * as users from "../users.js";
 
 import type {
@@ -49,6 +50,7 @@ declare const fullApi: ApiFromModules<{
   ratings: typeof ratings;
   seed: typeof seed;
   stats: typeof stats;
+  stripe: typeof stripe;
   users: typeof users;
 }>;
 

@@ -1,56 +1,12 @@
-import { loadStripe } from '@stripe/stripe-js'
-import Stripe from 'stripe'
-
-// Client-side Stripe
-export const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_mock'
-)
-
-// Server-side Stripe
-const stripeApiKey = process.env.STRIPE_SECRET_KEY || 'sk_test_mock'
-
-export const stripe = new Stripe(stripeApiKey, {
-  apiVersion: '2025-08-27.basil',
-  host: process.env.STRIPE_API_BASE ? new URL(process.env.STRIPE_API_BASE).hostname : undefined,
-  port: process.env.STRIPE_API_BASE ? parseInt(new URL(process.env.STRIPE_API_BASE).port) : undefined,
-  protocol: process.env.STRIPE_API_BASE ? new URL(process.env.STRIPE_API_BASE).protocol.replace(':', '') as 'http' | 'https' : undefined,
-})
-
-// Credit packages configuration.
-// `priceId` is populated from Stripe by `npm run stripe:products` and is
-// server-only, so it is undefined in the browser — the client uses this list
-// purely for display. Keep amounts here in step with the setup script.
+// Display-only copy for the buy-credits page.
+//
+// Nothing here is trusted: the amount charged comes from the Stripe Price ID
+// held in Convex env, and the credits granted come from the PACKAGES table in
+// convex/stripe.ts. Editing these values in the browser changes the label and
+// nothing else. Keep them in step with the server when prices change.
 export const CREDIT_PACKAGES = [
-  {
-    id: 'credits_10',
-    name: '10 Credits',
-    credits: 10,
-    price: 5.00, // £5
-    priceId: process.env.STRIPE_PRICE_CREDITS_10,
-    popular: false,
-  },
-  {
-    id: 'credits_25',
-    name: '25 Credits',
-    credits: 25,
-    price: 10.00, // £10
-    priceId: process.env.STRIPE_PRICE_CREDITS_25,
-    popular: true,
-  },
-  {
-    id: 'credits_50',
-    name: '50 Credits',
-    credits: 50,
-    price: 18.00, // £18 (10% discount)
-    priceId: process.env.STRIPE_PRICE_CREDITS_50,
-    popular: false,
-  },
-  {
-    id: 'credits_100',
-    name: '100 Credits',
-    credits: 100,
-    price: 32.00, // £32 (20% discount)
-    priceId: process.env.STRIPE_PRICE_CREDITS_100,
-    popular: false,
-  },
+  { id: 'credits_10', name: '10 Credits', credits: 10, price: 5.0, popular: false },
+  { id: 'credits_25', name: '25 Credits', credits: 25, price: 10.0, popular: true },
+  { id: 'credits_50', name: '50 Credits', credits: 50, price: 18.0, popular: false },
+  { id: 'credits_100', name: '100 Credits', credits: 100, price: 32.0, popular: false },
 ]

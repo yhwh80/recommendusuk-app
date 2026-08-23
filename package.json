@@ -9,7 +9,8 @@
     "start": "NODE_OPTIONS=--no-experimental-webstorage next start",
     "lint": "next lint",
     "seed": "convex run seed:run",
-    "stripe:products": "node scripts/setup-stripe-products.mjs"
+    "stripe:products": "node scripts/setup-stripe-products.mjs",
+    "stripe:webhook": "node scripts/setup-stripe-webhook.mjs"
   },
   "dependencies": {
     "@convex-dev/auth": "^0.0.80",

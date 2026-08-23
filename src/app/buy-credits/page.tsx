@@ -2,14 +2,16 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useConvexAuth } from 'convex/react'
-import { stripePromise, CREDIT_PACKAGES } from '@/lib/stripe'
+import { useConvexAuth, useAction } from 'convex/react'
+import { CREDIT_PACKAGES } from '@/lib/stripe'
+import { api } from '../../../convex/_generated/api'
 import { useCurrentUser } from '@/lib/useCurrentUser'
 import { SiteHeader } from '@/components/SiteHeader'
 
 export default function BuyCreditsPage() {
   const { isLoading, isAuthenticated } = useConvexAuth()
   const user = useCurrentUser()
+  const createCheckoutSession = useAction(api.stripe.createCheckoutSession)
   const [processingPackage, setProcessingPackage] = useState<string | null>(null)
   const [paymentsDisabled, setPaymentsDisabled] = useState(false)
   const [purchaseError, setPurchaseError] = useState<string | null>(null)
@@ -26,34 +28,23 @@ export default function BuyCreditsPage() {
     setPurchaseError(null)
 
     try {
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ packageId, userId: user._id }),
-      })
-
-      const data = await response.json()
+      // Convex decides the price and the credit amount; we only name a package.
+      const { url } = await createCheckoutSession({ packageId })
+      window.location.href = url
+      return
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : ''
 
       // Payments are switched off until Stripe is set up — show a calm notice
-      // rather than an error alert.
-      if (response.status === 503 || data?.code === 'payments_disabled') {
+      // rather than an error.
+      if (message.includes('not enabled yet')) {
         setPaymentsDisabled(true)
         return
       }
 
-      if (!response.ok) {
-        throw new Error(data?.error || 'Failed to create checkout session')
-      }
-
-      // Production Stripe checkout.
-      const stripe = await stripePromise
-      if (!stripe) throw new Error('Stripe failed to load')
-      const { error } = await stripe.redirectToCheckout({ sessionId: data.sessionId })
-      if (error) throw error
-    } catch (error: unknown) {
       console.error('Error:', error)
       setPurchaseError(
-        error instanceof Error ? error.message : 'Failed to process payment',
+        'Something went wrong starting your payment. Please try again.',
       )
     } finally {
       setProcessingPackage(null)
