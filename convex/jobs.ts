@@ -4,8 +4,14 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { JOB_POST_COST_CREDITS } from "./pricing";
 import { notify } from "./notifications";
 
-const JOB_COST_CREDITS = 5;
 const MAX_BIDS = 3;
+
+// Posting is free, so nothing naturally limits how many jobs one account can
+// open. This is not really an anti-spam measure — it is there to protect the
+// product professionals are paying for. Every junk lead is money a pro spent
+// for nothing, and pros who feel burned do not buy a second pack.
+// Nobody legitimately needs more than a handful of live jobs at once.
+const MAX_OPEN_JOBS_PER_CLIENT = 5;
 
 // All open jobs (jobs page) — newest first.
 export const listOpen = query({
@@ -160,6 +166,18 @@ export const create = mutation({
 
     const user = await ctx.db.get(userId);
     if (!user) throw new Error("User not found");
+
+    const openJobs = await ctx.db
+      .query("jobs")
+      .withIndex("by_client", (q) => q.eq("clientId", userId))
+      .filter((q) => q.eq(q.field("status"), "open"))
+      .collect();
+    if (openJobs.length >= MAX_OPEN_JOBS_PER_CLIENT) {
+      throw new Error(
+        `You can have up to ${MAX_OPEN_JOBS_PER_CLIENT} open jobs at once. ` +
+          `Close or complete one before posting another.`,
+      );
+    }
 
     const jobId = await ctx.db.insert("jobs", {
       clientId: userId,
