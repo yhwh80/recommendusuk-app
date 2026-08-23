@@ -44,10 +44,6 @@ export default function PostJobPage() {
     e.preventDefault()
     if (!user) return
 
-    if ((user.credits ?? 0) < 5) {
-      setMessage('Insufficient credits. You need 5 credits to post a job.')
-      return
-    }
 
     setSubmitting(true)
     setMessage('')
@@ -122,27 +118,12 @@ export default function PostJobPage() {
         </div>
 
         {/* Credit Warning */}
-        {credits < 5 ? (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
-            <div className="flex items-center">
-              <span className="text-2xl mr-3">⚠️</span>
-              <div>
-                <h3 className="font-semibold text-red-800">Insufficient Credits</h3>
-                <p className="text-red-700">You need 5 credits to post a job. You currently have {credits} credits.</p>
-                <Link href="/buy-credits" className="text-red-600 hover:text-red-800 font-medium">
-                  Buy more credits →
-                </Link>
-              </div>
-            </div>
-          </div>
-        ) : (
           <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
             <div className="flex items-center text-green-800">
               <span className="text-xl mr-2">💰</span>
-              <span>Posting this job will cost <strong>5 credits</strong>. You have <strong>{credits} credits</strong> available.</span>
+              <span>Posting a job is <strong>free</strong>. You&apos;ll receive up to 3 proposals from local professionals.</span>
             </div>
           </div>
-        )}
 
         <div className="bg-white rounded-lg shadow-sm border p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -288,7 +269,7 @@ export default function PostJobPage() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-green-500">✓</span>
-                  <span>Job posting costs <strong>5 credits</strong></span>
+                  <span>Posting is completely free</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-green-500">✓</span>
@@ -321,7 +302,7 @@ export default function PostJobPage() {
 
               <button
                 type="submit"
-                disabled={submitting || credits < 5}
+                disabled={submitting}
                 className="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {submitting ? 'Posting Job...' : 'Post Job (5 Credits)'}

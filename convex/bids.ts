@@ -1,6 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { bidCostForBudget } from "./pricing";
 import { notify } from "./notifications";
 
 // Bids on a job (job detail page).
@@ -85,12 +86,39 @@ export const create = mutation({
       .first();
     if (existing) throw new Error("You have already bid on this job");
 
+    // Professionals pay for the lead. Charged here rather than on acceptance
+    // because the value is the introduction — only 3 proposals are ever taken
+    // per job, so the slot itself is what is being bought.
+    const cost = bidCostForBudget(job.budgetMax);
+    const user = await ctx.db.get(userId);
+    if (!user) throw new Error("User not found");
+    const balance = user.credits ?? 0;
+    if (balance < cost) {
+      throw new Error(
+        `Insufficient credits. This proposal costs ${cost} ${
+          cost === 1 ? "credit" : "credits"
+        } and you have ${balance}.`,
+      );
+    }
+
     const bidId = await ctx.db.insert("bids", {
       jobId,
       professionalId: userId,
       amount,
       message,
       status: "pending",
+      costCredits: cost,
+    });
+
+    // Balance and ledger move together in this same mutation, so they cannot
+    // drift apart.
+    await ctx.db.patch(userId, { credits: balance - cost });
+    await ctx.db.insert("creditTransactions", {
+      userId,
+      amount: -cost,
+      reason: "bid",
+      jobId,
+      bidId,
     });
     // Bump the counter and auto-close once the 3-bid cap is hit
     // (matches the original behaviour in the job detail page).
@@ -134,6 +162,10 @@ export const update = mutation({
 
 // Withdraw (delete) your own pending bid. Frees a slot — if the job had
 // auto-closed at the bid cap and no one's hired, it re-opens for new bids.
+//
+// Deliberately NOT refunded: the proposal has already been put in front of the
+// client. Credits are only returned when the CLIENT removes the job (see
+// jobs.remove), which is the case the professional could not have foreseen.
 export const withdraw = mutation({
   args: { bidId: v.id("bids") },
   handler: async (ctx, { bidId }) => {

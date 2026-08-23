@@ -4,6 +4,7 @@ import { convexAuth } from "@convex-dev/auth/server";
 import { ResendOTP } from "./ResendOTP";
 import { ResendOTPPasswordReset } from "./ResendOTPPasswordReset";
 import { internal } from "./_generated/api";
+import { SIGNUP_BONUS_CLIENT, SIGNUP_BONUS_FREELANCER } from "./pricing";
 
 // Email/password auth, replacing Supabase Auth. The `profile` callback runs on
 // sign-up: it captures name + role and grants the free signup credits the old
@@ -21,7 +22,8 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
           email: params.email as string,
           name: (params.name as string) ?? "",
           role,
-          credits: role === "client" ? 25 : 10,
+          credits:
+            role === "client" ? SIGNUP_BONUS_CLIENT : SIGNUP_BONUS_FREELANCER,
           totalRating: 0,
           totalJobsCompleted: 0,
           isRecommended: false,

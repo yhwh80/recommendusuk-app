@@ -76,6 +76,8 @@ export default defineSchema({
     professionalId: v.id("users"),
     amount: v.number(),
     message: v.string(),
+    // Credits charged to submit this proposal, at the time it was submitted.
+    costCredits: v.optional(v.number()),
     status: v.union(
       v.literal("pending"),
       v.literal("accepted"),
@@ -106,10 +108,12 @@ export default defineSchema({
     reason: v.union(
       v.literal("signup_bonus"),
       v.literal("job_post"),
+      v.literal("bid"),
       v.literal("purchase"),
       v.literal("refund"),
     ),
     jobId: v.optional(v.id("jobs")),
+    bidId: v.optional(v.id("bids")),
     stripeReference: v.optional(v.string()),
   })
     .index("by_user", ["userId"])
@@ -131,6 +135,7 @@ export default defineSchema({
     type: v.union(
       v.literal("bid_accepted"),
       v.literal("bid_submitted"),
+      v.literal("bid_refunded"),
       v.literal("new_bid"),
       v.literal("new_review"),
       v.literal("job_completed"),

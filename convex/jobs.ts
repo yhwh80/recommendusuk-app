@@ -1,6 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { JOB_POST_COST_CREDITS } from "./pricing";
 import { notify } from "./notifications";
 
 const JOB_COST_CREDITS = 5;
@@ -139,9 +140,9 @@ export const getWithClient = query({
   },
 });
 
-// Post a job: costs 5 credits. The job insert, the balance update, and the
-// ledger row all commit together in this one atomic mutation — the drift the
-// original two-call Supabase code risked is impossible here.
+// Post a job. Free for customers — professionals pay for the leads instead
+// (see convex/pricing.ts). Charging the customer to ask for a quote is the
+// quickest way to end up with no jobs, and therefore no professionals.
 export const create = mutation({
   args: {
     title: v.string(),
@@ -159,11 +160,6 @@ export const create = mutation({
 
     const user = await ctx.db.get(userId);
     if (!user) throw new Error("User not found");
-    if ((user.credits ?? 0) < JOB_COST_CREDITS) {
-      throw new Error(
-        `Insufficient credits. You need ${JOB_COST_CREDITS} credits to post a job.`,
-      );
-    }
 
     const jobId = await ctx.db.insert("jobs", {
       clientId: userId,
@@ -175,20 +171,10 @@ export const create = mutation({
       location: args.location,
       skills: args.skills,
       deadline: args.deadline,
-      costCredits: JOB_COST_CREDITS,
+      costCredits: JOB_POST_COST_CREDITS,
       status: "open",
       maxBids: MAX_BIDS,
       currentBids: 0,
-    });
-
-    await ctx.db.patch(userId, {
-      credits: (user.credits ?? 0) - JOB_COST_CREDITS,
-    });
-    await ctx.db.insert("creditTransactions", {
-      userId,
-      amount: -JOB_COST_CREDITS,
-      reason: "job_post",
-      jobId,
     });
     return jobId;
   },
@@ -277,8 +263,10 @@ export const update = mutation({
 });
 
 // Delete/cancel a job (owner only). Removes the job and any bids on it.
-// Refunds the 5-credit posting cost ONLY if no one has bid yet — otherwise a
-// client could post, read proposals, delete for a refund, and repost for free.
+// Deleting a job refunds every professional who paid to bid on it. They spent
+// credits on a lead that has now evaporated through no fault of their own, and
+// nothing erodes trust in a leads marketplace faster than charging for those.
+// The client pays nothing to post, so there is nothing to refund them.
 export const remove = mutation({
   args: { jobId: v.id("jobs") },
   handler: async (ctx, { jobId }) => {
@@ -288,31 +276,43 @@ export const remove = mutation({
     if (!job) throw new Error("Job not found");
     if (job.clientId !== userId) throw new Error("Not your job");
 
-    const refundEligible = job.currentBids === 0;
-
-    // Remove any bids attached to the job first (avoid orphans).
     const bids = await ctx.db
       .query("bids")
       .withIndex("by_job", (q) => q.eq("jobId", jobId))
       .collect();
-    for (const b of bids) await ctx.db.delete(b._id);
+
+    // Refund each bidder what they actually paid, then remove the bid.
+    let refundedCredits = 0;
+    for (const bid of bids) {
+      const cost = bid.costCredits ?? 0;
+      if (cost > 0) {
+        const bidder = await ctx.db.get(bid.professionalId);
+        if (bidder) {
+          await ctx.db.patch(bid.professionalId, {
+            credits: (bidder.credits ?? 0) + cost,
+          });
+          // No jobId on the ledger row — the job is about to stop existing.
+          await ctx.db.insert("creditTransactions", {
+            userId: bid.professionalId,
+            amount: cost,
+            reason: "refund",
+          });
+          refundedCredits += cost;
+          await notify(ctx, {
+            userId: bid.professionalId,
+            type: "bid_refunded",
+            message: `"${job.title}" was withdrawn by the customer — your ${cost} ${
+              cost === 1 ? "credit has" : "credits have"
+            } been refunded`,
+            link: "/my-bids",
+          });
+        }
+      }
+      await ctx.db.delete(bid._id);
+    }
 
     await ctx.db.delete(jobId);
 
-    if (refundEligible) {
-      const user = await ctx.db.get(userId);
-      if (user) {
-        await ctx.db.patch(userId, {
-          credits: (user.credits ?? 0) + job.costCredits,
-        });
-        // No jobId on the ledger row — the job no longer exists.
-        await ctx.db.insert("creditTransactions", {
-          userId,
-          amount: job.costCredits,
-          reason: "refund",
-        });
-      }
-    }
-    return { refunded: refundEligible ? job.costCredits : 0 };
+    return { refundedBidders: bids.length, refundedCredits };
   },
 });

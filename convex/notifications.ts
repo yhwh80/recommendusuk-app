@@ -6,6 +6,7 @@ import { internal } from "./_generated/api";
 type NotifType =
   | "bid_accepted"
   | "bid_submitted"
+  | "bid_refunded"
   | "new_bid"
   | "new_review"
   | "job_completed";
@@ -14,6 +15,7 @@ type NotifType =
 const EMAIL_SUBJECT: Record<NotifType, string> = {
   bid_accepted: "🎉 Your proposal was accepted!",
   bid_submitted: "Your proposal was submitted ✅",
+  bid_refunded: "Credits refunded — job withdrawn",
   new_bid: "New proposal on your job",
   new_review: "You received a review ⭐",
   job_completed: "A job was marked complete",

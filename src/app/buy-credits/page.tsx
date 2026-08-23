@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useConvexAuth, useAction } from 'convex/react'
 import { CREDIT_PACKAGES } from '@/lib/stripe'
+import { BID_COST_TIERS } from '../../../convex/pricing'
 import { api } from '../../../convex/_generated/api'
 import { useCurrentUser } from '@/lib/useCurrentUser'
 import { SiteHeader } from '@/components/SiteHeader'
@@ -91,30 +93,74 @@ export default function BuyCreditsPage() {
           </p>
         </div>
 
+        {/* Clients never spend credits — say so rather than selling to them. */}
+        {user.role === 'client' && (
+          <div className="mb-8 rounded-lg border border-blue-200 bg-blue-50 p-6">
+            <h3 className="font-semibold text-blue-900 mb-1">
+              You don&apos;t need credits
+            </h3>
+            <p className="text-sm text-blue-800">
+              Posting a job is free, and always will be. Credits are only used by
+              professionals sending you proposals.{' '}
+              <Link href="/post-job" className="font-medium underline">
+                Post a job
+              </Link>
+              .
+            </p>
+          </div>
+        )}
+
         {/* Current Credit Usage */}
         <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">How Credits Work</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="text-center p-4 bg-green-50 rounded-lg">
-              <div className="text-2xl mb-2">📝</div>
-              <div className="font-semibold text-green-900">Post a Job</div>
-              <div className="text-sm text-green-700">5 credits</div>
+              <div className="text-2xl mb-2">📩</div>
+              <div className="font-semibold text-green-900">Send a Proposal</div>
+              <div className="text-sm text-green-700">1–6 credits by job size</div>
             </div>
             <div className="text-center p-4 bg-green-50 rounded-lg">
               <div className="text-2xl mb-2">🎯</div>
-              <div className="font-semibold text-green-900">Get 3 Proposals</div>
-              <div className="text-sm text-green-700">Included with job post</div>
+              <div className="font-semibold text-green-900">Only 3 Per Job</div>
+              <div className="text-sm text-green-700">You&apos;re never one of fifty</div>
             </div>
             <div className="text-center p-4 bg-green-50 rounded-lg">
-              <div className="text-2xl mb-2">🎁</div>
-              <div className="font-semibold text-green-900">Free Credits</div>
-              <div className="text-sm text-green-700">25 for clients, 10 for freelancers</div>
+              <div className="text-2xl mb-2">↩️</div>
+              <div className="font-semibold text-green-900">Refunded</div>
+              <div className="text-sm text-green-700">If the customer withdraws the job</div>
             </div>
-            <div className="text-center p-4 bg-yellow-50 rounded-lg">
-              <div className="text-2xl mb-2">💰</div>
-              <div className="font-semibold text-yellow-900">Best Value</div>
-              <div className="text-sm text-yellow-700">Bulk packages save up to 20%</div>
+            <div className="text-center p-4 bg-green-50 rounded-lg">
+              <div className="text-2xl mb-2">📝</div>
+              <div className="font-semibold text-green-900">Posting Is Free</div>
+              <div className="text-sm text-green-700">Customers never pay</div>
             </div>
+          </div>
+
+          {/* Priced from the same table the server charges from, so the two
+              can never disagree. */}
+          <div className="mt-6 border-t pt-4">
+            <h3 className="text-sm font-semibold text-gray-900 mb-3">
+              Cost to send a proposal
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {BID_COST_TIERS.map((tier, i) => {
+                const from = i === 0 ? 0 : BID_COST_TIERS[i - 1].upToBudget
+                const label = Number.isFinite(tier.upToBudget)
+                  ? `£${from.toLocaleString()}–£${(tier.upToBudget - 1).toLocaleString()}`
+                  : `£${from.toLocaleString()}+`
+                return (
+                  <div key={i} className="rounded-lg bg-gray-50 p-3 text-center">
+                    <div className="text-xs text-gray-600">{label}</div>
+                    <div className="font-semibold text-gray-900">
+                      {tier.credits} {tier.credits === 1 ? 'credit' : 'credits'}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+            <p className="mt-3 text-xs text-gray-500">
+              Based on the customer&apos;s stated budget.
+            </p>
           </div>
         </div>
 
@@ -174,7 +220,7 @@ export default function BuyCreditsPage() {
                   </div>
 
                   <div className="text-sm text-gray-600">
-                    Post {Math.floor(pkg.credits / 5)} jobs
+                    ≈ {Math.floor(pkg.credits / 2)} proposals
                   </div>
 
                   {pkg.credits >= 50 && (

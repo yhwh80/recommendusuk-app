@@ -77,8 +77,8 @@ export default function JobDetailPage() {
     if (!job) return
     const willRefund = job.currentBids === 0
     const msg = willRefund
-      ? 'Delete this job? No one has bid yet, so your 5 credits will be refunded.'
-      : 'Delete this job? It has bids, so the 5 credits will NOT be refunded.'
+      ? 'Delete this job? No one has bid on it yet.'
+      : 'Delete this job? Any professionals who paid to bid will be refunded.'
     if (!window.confirm(msg)) return
     setDeleting(true)
     try {
@@ -221,7 +221,7 @@ export default function JobDetailPage() {
                   {job.status === 'open' && (
                     <span className="text-xs text-gray-500">
                       {job.currentBids === 0
-                        ? 'Delete now → 5 credits refunded'
+                        ? 'Delete now'
                         : 'Has bids → no refund on delete'}
                     </span>
                   )}

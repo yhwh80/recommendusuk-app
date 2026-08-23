@@ -1,6 +1,10 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import {
+  SIGNUP_BONUS_CLIENT,
+  SIGNUP_BONUS_FREELANCER,
+} from "./pricing";
 
 // Current logged-in user's profile (replaces: select * from users where id = session.user.id)
 export const getMe = query({
@@ -108,7 +112,8 @@ export const completeOnboarding = mutation({
     if (!user) throw new Error("User not found");
     if (user.role) return; // already onboarded — no double credits
 
-    const credits = role === "client" ? 25 : 10;
+    const credits =
+      role === "client" ? SIGNUP_BONUS_CLIENT : SIGNUP_BONUS_FREELANCER;
     await ctx.db.patch(userId, {
       role,
       credits,
