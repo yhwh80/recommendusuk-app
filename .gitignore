@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Internal business/legal planning — keep out of the public repo
+COMPLIANCE-TODO.md
