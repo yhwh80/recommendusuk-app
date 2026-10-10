@@ -22,8 +22,12 @@ export const BID_COST_TIERS = [
   { upToBudget: Infinity, credits: 6 },
 ];
 
-/** Credits a professional pays to bid on a job with this budget. */
-export function bidCostForBudget(budgetMax: number): number {
+/**
+ * Credits a professional pays to bid on a job with this budget. Jobs store
+ * budgets in pence; the tiers above are in pounds, as shown to users.
+ */
+export function bidCostForBudget(budgetMaxPence: number): number {
+  const budgetMax = budgetMaxPence / 100;
   const safeBudget = Number.isFinite(budgetMax) && budgetMax > 0 ? budgetMax : 0;
   const tier = BID_COST_TIERS.find((t) => safeBudget < t.upToBudget);
   // The final tier is unbounded, so this fallback is unreachable in practice.
