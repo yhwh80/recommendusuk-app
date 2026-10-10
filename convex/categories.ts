@@ -1,4 +1,4 @@
-import { query, mutation } from "./_generated/server";
+import { query, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 
 export const list = query({
@@ -15,8 +15,9 @@ export const getBySlug = query({
       .unique(),
 });
 
-// Admin/setup helper to add a category.
-export const create = mutation({
+// Admin/setup helper to add a category. Internal so only `npx convex run`
+// (or other server code) can add one, never a site visitor.
+export const create = internalMutation({
   args: {
     name: v.string(),
     slug: v.string(),
