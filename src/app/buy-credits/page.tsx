@@ -108,12 +108,11 @@ export default function BuyCreditsPage() {
               .
             </p>
             <p className="text-sm text-blue-800 mt-2">
-              Want to quote for work yourself? You&apos;ll need a separate worker
-              account.{' '}
-              <Link href="/contact" className="font-medium underline">
-                Contact us
+              Want to quote for work yourself?{' '}
+              <Link href="/auth?type=freelancer" className="font-medium underline">
+                Create a worker account
               </Link>{' '}
-              and we&apos;ll help you set it up.
+              with a different email address.
             </p>
           </div>
         )}

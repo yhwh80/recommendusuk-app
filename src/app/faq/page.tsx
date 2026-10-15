@@ -19,7 +19,7 @@ const SECTIONS: { title: string; icon: string; items: QA[] }[] = [
       { q: 'What is RecommendUsUK?', a: 'RecommendUsUK is a UK marketplace that connects clients who need work done with recommended, rated professionals. Clients post jobs for free; professionals send proposals to the ones they want.' },
       { q: 'How do I sign up?', a: 'Click “Join now”, choose whether you want to hire or to work, and create your account with email or “Continue with Google”. It takes a minute, and professionals get free credits to start.' },
       { q: 'Is it free to join?', a: 'Yes. Creating an account is free. Posting jobs is always free for clients, and professionals get 20 free credits on sign-up.' },
-      { q: 'Can I be both a client and a professional?', a: 'You choose a main role when you join. If you need the other side too, get in touch and we’ll help you set it up.' },
+      { q: 'Can I be both a client and a professional?', a: 'Each account is either for hiring or for working, chosen when you join. If you want to do both, create a second account with a different email address.' },
     ],
   },
   {
