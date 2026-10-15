@@ -66,6 +66,20 @@ export default defineSchema({
     selectedProfessionalId: v.optional(v.id("users")),
     acceptedBidId: v.optional(v.id("bids")),
     completedAt: v.optional(v.number()),
+    // The customer's description exactly as they typed it, before any AI
+    // suggestion was applied. Never overwritten, so a professional's dispute
+    // about "what the customer actually asked for" can always be settled.
+    originalDescription: v.optional(v.string()),
+    // How the job post assistant was used on this post. Absent on jobs posted
+    // before the assistant existed.
+    assistantOutcome: v.optional(
+      v.union(
+        v.literal("accepted"), // posted the suggested draft unchanged
+        v.literal("edited"), // took the draft, then changed it
+        v.literal("skipped"), // never used it, or kept their own text
+        v.literal("unavailable"), // the AI call failed; posted without it
+      ),
+    ),
   })
     .index("by_client", ["clientId"])
     .index("by_status", ["status"])
@@ -167,4 +181,31 @@ export default defineSchema({
     .index("by_job", ["jobId"])
     .index("by_recipient", ["recipientId"])
     .index("by_sender", ["senderId"]),
+
+  // One row per model call: cost tracking, rate limiting and failure
+  // detection. Prompts and outputs are deleted after AI_LOG_RETENTION_DAYS
+  // by the daily cron in crons.ts.
+  aiCalls: defineTable({
+    userId: v.id("users"),
+    feature: v.union(
+      v.literal("job_post_questions"),
+      v.literal("job_post_draft"),
+    ),
+    model: v.string(),
+    ok: v.boolean(),
+    error: v.optional(v.string()),
+    inputTokens: v.number(),
+    outputTokens: v.number(),
+    costUsd: v.number(),
+    durationMs: v.number(),
+    input: v.string(),
+    output: v.optional(v.string()),
+  }).index("by_user", ["userId"]),
+
+  // One row per visit to the post-job form, so abandonment can be measured:
+  // a row with no jobId is a customer who started a post and gave up.
+  postFormSessions: defineTable({
+    userId: v.id("users"),
+    jobId: v.optional(v.id("jobs")),
+  }).index("by_user", ["userId"]),
 });

@@ -159,6 +159,16 @@ export const create = mutation({
     location: v.optional(v.string()),
     skills: v.optional(v.array(v.string())),
     deadline: v.optional(v.number()),
+    originalDescription: v.optional(v.string()),
+    assistantOutcome: v.optional(
+      v.union(
+        v.literal("accepted"),
+        v.literal("edited"),
+        v.literal("skipped"),
+        v.literal("unavailable"),
+      ),
+    ),
+    formSessionId: v.optional(v.id("postFormSessions")),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -193,7 +203,18 @@ export const create = mutation({
       status: "open",
       maxBids: MAX_BIDS,
       currentBids: 0,
+      // Falls back to the posted text, so every new job has an original even
+      // when the assistant was never opened.
+      originalDescription: args.originalDescription ?? args.description,
+      assistantOutcome: args.assistantOutcome ?? "skipped",
     });
+
+    if (args.formSessionId) {
+      const session = await ctx.db.get(args.formSessionId);
+      if (session && session.userId === userId && !session.jobId) {
+        await ctx.db.patch(args.formSessionId, { jobId });
+      }
+    }
     return jobId;
   },
 });
