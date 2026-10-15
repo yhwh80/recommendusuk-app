@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { RoleBadge } from '@/components/RoleBadge'
+import { ReviewLinkCard } from '@/components/ReviewLinkCard'
 import { useConvexAuth, useQuery } from 'convex/react'
 import { useAuthActions } from '@convex-dev/auth/react'
 import { api } from '../../../../convex/_generated/api'
@@ -200,6 +201,10 @@ export default function FreelancerDashboard() {
               </div>
             </div>
           </Link>
+        </div>
+
+        <div className="mb-8">
+          <ReviewLinkCard userId={user._id} name={user.name} />
         </div>
 
         {/* Quick Actions */}
