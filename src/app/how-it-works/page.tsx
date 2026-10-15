@@ -26,9 +26,9 @@ export default function HowItWorksPage() {
   ]
 
   const proSteps = [
-    { n: '1', title: 'Build your profile', body: 'Add your skills, photo and area. A strong profile wins more work. You start with 10 free credits.' },
+    { n: '1', title: 'Build your profile', body: 'Add your skills, photo and area. A strong profile wins more work. You start with 20 free credits.' },
     { n: '2', title: 'Browse matching jobs', body: 'Find jobs by keyword, area, skill or category — or get leads matched to the skills on your profile.' },
-    { n: '3', title: 'Send a proposal', body: 'Spend a credit to submit a proposal to a client. You only pay to reach a client you actually want to work with.' },
+    { n: '3', title: 'Send a proposal', body: 'Spend 1–6 credits to send a proposal, depending on the size of the job. You only pay to reach a client you actually want to work with.' },
     { n: '4', title: 'Get hired & earn your badge', body: 'Deliver great work, collect reviews, and earn the Recommended badge that puts you in front of more clients.' },
   ]
 
@@ -89,11 +89,11 @@ export default function HowItWorksPage() {
           <dl className="space-y-5">
             <div>
               <dt className="font-semibold text-gray-900">Is it free to post a job?</dt>
-              <dd className="text-gray-600 text-sm mt-1">Yes. Clients post jobs and receive proposals for free. New clients also get 25 free credits.</dd>
+              <dd className="text-gray-600 text-sm mt-1">Yes. Clients post jobs and receive proposals for free, and never need credits.</dd>
             </div>
             <div>
               <dt className="font-semibold text-gray-900">What are credits?</dt>
-              <dd className="text-gray-600 text-sm mt-1">Credits let professionals send proposals to clients. You start with 10 free credits and can top up any time — you only spend a credit when you choose to respond to a job.</dd>
+              <dd className="text-gray-600 text-sm mt-1">Credits let professionals send proposals to clients. You start with 20 free credits and can top up any time. Sending a proposal costs 1–6 credits depending on the size of the job, and you only spend them when you choose to respond.</dd>
             </div>
             <div>
               <dt className="font-semibold text-gray-900">What does the Recommended badge mean?</dt>

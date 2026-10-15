@@ -6,6 +6,7 @@ import { useConvexAuth } from 'convex/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { InAppBrowserNotice } from '@/components/InAppBrowserNotice'
+import { SIGNUP_BONUS_FREELANCER } from '../../../convex/pricing'
 
 export const dynamic = 'force-dynamic'
 
@@ -331,7 +332,7 @@ function AuthPageInner() {
                 >
                   <div className="text-2xl mb-2">💼</div>
                   <div className="font-semibold">Hire</div>
-                  <div className="text-sm text-gray-600">25 credits</div>
+                  <div className="text-sm text-gray-600">Post jobs free</div>
                 </button>
                 <button
                   type="button"
@@ -344,7 +345,7 @@ function AuthPageInner() {
                 >
                   <div className="text-2xl mb-2">🎯</div>
                   <div className="font-semibold">Work</div>
-                  <div className="text-sm text-gray-600">10 credits</div>
+                  <div className="text-sm text-gray-600">{SIGNUP_BONUS_FREELANCER} free credits</div>
                 </button>
               </div>
             </div>
