@@ -17,9 +17,15 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 // decides. Every failure returns { ok: false } so the form carries on without
 // it; a broken assistant must never stop someone posting a job.
 
-const MODEL = "claude-opus-5-5";
-// Dollars per million tokens. Used for the cost column in aiCalls.
-const PRICE_PER_MTOK = { input: 4, output: 20 };
+// Dollars per million tokens, for the cost column in aiCalls. Server-side
+// refusal fallback is only offered on the larger models.
+const MODELS = {
+  "claude-sonnet-5-5": { input: 2, output: 10, fallback: true },
+  "claude-haiku-5-5": { input: 0.1, output: 0.5, fallback: false },
+  "claude-opus-5-5": { input: 4, output: 20, fallback: true },
+} as const;
+export type Model = keyof typeof MODELS;
+const DEFAULT_MODEL: Model = "claude-sonnet-5-5";
 
 export const MAX_QUESTIONS = 3;
 // Each assistant use is two calls, so this allows ~10 posts per user per day.
@@ -103,12 +109,13 @@ async function callModel(
   feature: Feature,
   prompt: string,
   schema: Record<string, unknown>,
+  model: Model,
 ): Promise<unknown | null> {
   const started = Date.now();
   const log = {
     userId,
     feature,
-    model: MODEL,
+    model,
     input: prompt,
     inputTokens: 0,
     outputTokens: 0,
@@ -130,10 +137,12 @@ async function callModel(
     // Short timeout and one retry: the customer is waiting on the form.
     const client = new Anthropic({ apiKey, timeout: 45_000, maxRetries: 1 });
     const response = await client.beta.messages.create({
-      model: MODEL,
+      model,
       max_tokens: 4000,
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
+      ...(MODELS[model].fallback && {
+        betas: ["server-side-fallback-2026-07-01"],
+        fallbacks: "default" as const,
+      }),
       output_config: {
         effort: "low",
         format: { type: "json_schema", schema },
@@ -145,8 +154,8 @@ async function callModel(
     const inputTokens = response.usage.input_tokens;
     const outputTokens = response.usage.output_tokens;
     const costUsd =
-      (inputTokens * PRICE_PER_MTOK.input +
-        outputTokens * PRICE_PER_MTOK.output) /
+      (inputTokens * MODELS[model].input +
+        outputTokens * MODELS[model].output) /
       1_000_000;
     const text = response.content
       .map((b) => (b.type === "text" ? b.text : ""))
@@ -226,6 +235,7 @@ export async function runQuestions(
   ctx: ActionCtx,
   userId: Id<"users">,
   args: PostArgs,
+  model: Model = DEFAULT_MODEL,
 ): Promise<QuestionsResult> {
   if (tooLong(args.title, args.description, args.location ?? "")) {
     return { ok: false };
@@ -241,6 +251,7 @@ Ask the customer up to ${MAX_QUESTIONS} short questions whose answers would most
     "job_post_questions",
     prompt,
     QUESTIONS_SCHEMA,
+    model,
   );
   if (!result) return { ok: false };
   const questions = (result as { questions?: unknown }).questions;
@@ -259,6 +270,7 @@ export async function runDraft(
   ctx: ActionCtx,
   userId: Id<"users">,
   args: PostArgs & { answers: Answer[] },
+  model: Model = DEFAULT_MODEL,
 ): Promise<DraftResult> {
   const answers = args.answers.slice(0, MAX_QUESTIONS);
   if (
@@ -294,6 +306,7 @@ Write a clearer version of this job post for professionals to quote on.
     "job_post_draft",
     prompt,
     DRAFT_SCHEMA,
+    model,
   );
   if (!result) return { ok: false };
   const d = result as {

@@ -1,6 +1,11 @@
 import { v } from "convex/values";
 import { internalAction } from "./_generated/server";
-import { runDraft, runQuestions, MAX_QUESTIONS } from "./jobPostAssistant";
+import {
+  runDraft,
+  runQuestions,
+  MAX_QUESTIONS,
+  Model,
+} from "./jobPostAssistant";
 
 // Scenario set for the job post assistant. Run against the DEV deployment
 // before shipping and after any prompt or model change:
@@ -161,8 +166,19 @@ const SCENARIOS: Scenario[] = [
 const CANNED_ANSWER = "Not sure, whatever is usual";
 
 export const run = internalAction({
-  args: { userId: v.id("users"), only: v.optional(v.string()) },
-  handler: async (ctx, { userId, only }) => {
+  args: {
+    userId: v.id("users"),
+    only: v.optional(v.string()),
+    model: v.optional(
+      v.union(
+        v.literal("claude-sonnet-5-5"),
+        v.literal("claude-haiku-5-5"),
+        v.literal("claude-opus-5-5"),
+      ),
+    ),
+  },
+  handler: async (ctx, { userId, only, model }) => {
+    const m: Model | undefined = model;
     const results = [];
     for (const s of SCENARIOS.filter((x) => !only || x.id === only)) {
       const failures: string[] = [];
@@ -172,7 +188,7 @@ export const run = internalAction({
         location: s.location,
       };
 
-      const q = await runQuestions(ctx, userId, post);
+      const q = await runQuestions(ctx, userId, post, m);
       const questions = q.ok ? q.questions : [];
       if (questions.length > (s.maxQuestions ?? MAX_QUESTIONS)) {
         failures.push(`asked ${questions.length} questions`);
@@ -181,13 +197,18 @@ export const run = internalAction({
       const d =
         s.expect === "rejected" && !q.ok
           ? ({ ok: false } as const)
-          : await runDraft(ctx, userId, {
-              ...post,
-              answers: questions.map((question) => ({
-                question,
-                answer: CANNED_ANSWER,
-              })),
-            });
+          : await runDraft(
+              ctx,
+              userId,
+              {
+                ...post,
+                answers: questions.map((question) => ({
+                  question,
+                  answer: CANNED_ANSWER,
+                })),
+              },
+              m,
+            );
 
       if (s.expect === "helps") {
         if (!d.ok) failures.push("no draft for a genuine job");
