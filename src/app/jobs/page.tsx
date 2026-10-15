@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useQuery, useConvexAuth } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
 import { SiteHeader, NavLink } from '@/components/SiteHeader'
+import { SIGNUP_BONUS_FREELANCER } from '../../../convex/pricing'
 
 export default function JobsPage() {
   const { isLoading: authLoading, isAuthenticated } = useConvexAuth()
@@ -244,7 +245,7 @@ export default function JobsPage() {
         {/* CTA for non-users */}
         <div className="mt-12 bg-gradient-to-r from-green-500 to-green-400 rounded-lg p-8 text-center text-white">
           <h3 className="text-2xl font-bold mb-2">Ready to start bidding?</h3>
-          <p className="text-green-100 mb-6">Join RecommendUsUK and get 10 free credits to submit your first proposals</p>
+          <p className="text-green-100 mb-6">Join RecommendUsUK and get {SIGNUP_BONUS_FREELANCER} free credits to submit your first proposals</p>
           <Link
             href="/auth?type=freelancer"
             className="inline-flex items-center px-8 py-3 bg-white text-green-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors"

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useConvexAuth, useMutation } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
+import { SIGNUP_BONUS_FREELANCER } from '../../../convex/pricing'
 import { useCurrentUser } from '@/lib/useCurrentUser'
 
 export default function OnboardingPage() {
@@ -66,7 +67,7 @@ export default function OnboardingPage() {
             <div className="font-semibold text-lg text-gray-900">Hire</div>
             <div className="text-sm text-gray-600">Post jobs & hire pros</div>
             <div className="text-xs text-green-600 mt-2 font-medium">
-              {saving === 'client' ? 'Setting up…' : '25 free credits'}
+              {saving === 'client' ? 'Setting up…' : 'Free to post'}
             </div>
           </button>
           <button
@@ -78,7 +79,7 @@ export default function OnboardingPage() {
             <div className="font-semibold text-lg text-gray-900">Work</div>
             <div className="text-sm text-gray-600">Find jobs & get hired</div>
             <div className="text-xs text-green-600 mt-2 font-medium">
-              {saving === 'freelancer' ? 'Setting up…' : '10 free credits'}
+              {saving === 'freelancer' ? 'Setting up…' : `${SIGNUP_BONUS_FREELANCER} free credits`}
             </div>
           </button>
         </div>

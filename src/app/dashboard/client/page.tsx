@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { RoleBadge } from '@/components/RoleBadge'
 import { useConvexAuth, useQuery } from 'convex/react'
 import { useAuthActions } from '@convex-dev/auth/react'
 import { api } from '../../../../convex/_generated/api'
@@ -41,7 +42,6 @@ export default function ClientDashboard() {
 
   const activeJobs = jobs.filter((job) => job.status === 'open').length
   const completedJobs = jobs.filter((job) => job.status === 'completed').length
-  const totalSpent = jobs.length * 5 // 5 credits per job
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -57,7 +57,8 @@ export default function ClientDashboard() {
                 <span className="text-lg font-bold text-gray-800">RecommendUsUK</span>
               </Link>
               <span className="hidden sm:inline text-gray-400">|</span>
-              <span className="hidden sm:inline font-medium text-gray-600">Client Dashboard</span>
+              <span className="hidden sm:inline font-medium text-gray-600">Hirer Dashboard</span>
+              <RoleBadge />
             </div>
 
             {/* Desktop nav */}
@@ -176,8 +177,8 @@ export default function ClientDashboard() {
                 <span className="text-2xl">💰</span>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Spent</p>
-                <p className="text-2xl font-bold text-gray-900">{totalSpent} credits</p>
+                <p className="text-sm font-medium text-gray-600">Posting jobs</p>
+                <p className="text-2xl font-bold text-gray-900">Free</p>
               </div>
             </div>
           </Link>
@@ -196,7 +197,7 @@ export default function ClientDashboard() {
               </div>
               <div className="ml-4">
                 <p className="font-semibold text-gray-900">Post a New Job</p>
-                <p className="text-sm text-gray-600">5 credits per job</p>
+                <p className="text-sm text-gray-600">Free to post</p>
               </div>
             </Link>
 

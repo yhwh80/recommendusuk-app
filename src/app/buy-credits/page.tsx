@@ -97,15 +97,23 @@ export default function BuyCreditsPage() {
         {user.role === 'client' && (
           <div className="mb-8 rounded-lg border border-blue-200 bg-blue-50 p-6">
             <h3 className="font-semibold text-blue-900 mb-1">
-              You don&apos;t need credits
+              You&apos;re signed in with a hirer account, so you don&apos;t need credits
             </h3>
             <p className="text-sm text-blue-800">
-              Posting a job is free, and always will be. Credits are only used by
-              professionals sending you proposals.{' '}
+              Posting a job is free, and always will be. Credits are only bought by
+              workers, to send proposals on jobs.{' '}
               <Link href="/post-job" className="font-medium underline">
                 Post a job
               </Link>
               .
+            </p>
+            <p className="text-sm text-blue-800 mt-2">
+              Want to quote for work yourself? You&apos;ll need a separate worker
+              account.{' '}
+              <Link href="/contact" className="font-medium underline">
+                Contact us
+              </Link>{' '}
+              and we&apos;ll help you set it up.
             </p>
           </div>
         )}
@@ -186,6 +194,7 @@ export default function BuyCreditsPage() {
         )}
 
         {/* Credit Packages */}
+        {user.role !== 'client' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {CREDIT_PACKAGES.map((pkg) => (
             <div
@@ -254,6 +263,7 @@ export default function BuyCreditsPage() {
             </div>
           ))}
         </div>
+        )}
 
         {/* Security Notice */}
         <div className="mt-12 bg-gray-50 border border-gray-200 rounded-lg p-6">
