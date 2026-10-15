@@ -7,6 +7,7 @@ import { api } from '../../../../convex/_generated/api'
 import { Id } from '../../../../convex/_generated/dataModel'
 import { useCurrentUser } from '@/lib/useCurrentUser'
 import { SiteHeader } from '@/components/SiteHeader'
+import { ReviewLinkCard } from '@/components/ReviewLinkCard'
 
 export default function PublicProfilePage() {
   const params = useParams()
@@ -130,6 +131,12 @@ export default function PublicProfilePage() {
           </div>
         )}
 
+        {me && me._id === id && profile.role === 'freelancer' && (
+          <div className="mb-6">
+            <ReviewLinkCard userId={id} name={profile.name} />
+          </div>
+        )}
+
         {/* Reviews */}
         <div className="bg-white rounded-2xl border border-green-100 p-8">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
@@ -149,6 +156,11 @@ export default function PublicProfilePage() {
                       <span className="text-green-700 text-sm font-medium">✓ Recommended</span>
                     )}
                   </div>
+                  {r.source === 'invited' && (
+                    <p className="text-xs text-gray-500 mb-1">
+                      Past customer · not booked through RecommendUsUK
+                    </p>
+                  )}
                   <p className="text-gray-700 text-sm">{r.reviewText}</p>
                   {r.responseText && (
                     <p className="text-gray-500 text-sm mt-2 pl-3 border-l-2 border-green-200">
