@@ -355,7 +355,7 @@ export default function PostJobPage() {
                 disabled={submitting}
                 className="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {submitting ? 'Posting Job...' : 'Post Job (5 Credits)'}
+                {submitting ? 'Posting Job...' : 'Post Job (Free)'}
               </button>
             </div>
           </form>

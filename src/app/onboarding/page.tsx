@@ -5,7 +5,9 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useConvexAuth, useMutation } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
+import { SIGNUP_BONUS_FREELANCER } from '../../../convex/pricing'
 import { useCurrentUser } from '@/lib/useCurrentUser'
+import { takePostAuthRedirect } from '@/lib/postAuthRedirect'
 
 export default function OnboardingPage() {
   const { isLoading, isAuthenticated } = useConvexAuth()
@@ -21,7 +23,10 @@ export default function OnboardingPage() {
   // Already have a role? Straight to the dashboard.
   useEffect(() => {
     if (user && user.role) {
-      router.replace(user.role === 'freelancer' ? '/dashboard/freelancer' : '/dashboard/client')
+      router.replace(
+        takePostAuthRedirect() ??
+          (user.role === 'freelancer' ? '/dashboard/freelancer' : '/dashboard/client'),
+      )
     }
   }, [user, router])
 
@@ -29,7 +34,10 @@ export default function OnboardingPage() {
     setSaving(role)
     try {
       await completeOnboarding({ role })
-      router.replace(role === 'client' ? '/dashboard/client' : '/dashboard/freelancer')
+      router.replace(
+        takePostAuthRedirect() ??
+          (role === 'client' ? '/dashboard/client' : '/dashboard/freelancer'),
+      )
     } catch {
       setSaving(null)
     }
@@ -66,7 +74,7 @@ export default function OnboardingPage() {
             <div className="font-semibold text-lg text-gray-900">Hire</div>
             <div className="text-sm text-gray-600">Post jobs & hire pros</div>
             <div className="text-xs text-green-600 mt-2 font-medium">
-              {saving === 'client' ? 'Setting up…' : '25 free credits'}
+              {saving === 'client' ? 'Setting up…' : 'Free to post'}
             </div>
           </button>
           <button
@@ -78,7 +86,7 @@ export default function OnboardingPage() {
             <div className="font-semibold text-lg text-gray-900">Work</div>
             <div className="text-sm text-gray-600">Find jobs & get hired</div>
             <div className="text-xs text-green-600 mt-2 font-medium">
-              {saving === 'freelancer' ? 'Setting up…' : '10 free credits'}
+              {saving === 'freelancer' ? 'Setting up…' : `${SIGNUP_BONUS_FREELANCER} free credits`}
             </div>
           </button>
         </div>

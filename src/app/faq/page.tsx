@@ -17,9 +17,9 @@ const SECTIONS: { title: string; icon: string; items: QA[] }[] = [
     icon: '🚀',
     items: [
       { q: 'What is RecommendUsUK?', a: 'RecommendUsUK is a UK marketplace that connects clients who need work done with recommended, rated professionals. Clients post jobs for free; professionals send proposals to the ones they want.' },
-      { q: 'How do I sign up?', a: 'Click “Join now”, choose whether you want to hire or to work, and create your account with email or “Continue with Google”. It takes a minute and you get free credits to start.' },
-      { q: 'Is it free to join?', a: 'Yes. Creating an account is free. Clients get 25 free credits and professionals get 10 free credits on sign-up.' },
-      { q: 'Can I be both a client and a professional?', a: 'You choose a main role when you join. If you need the other side too, get in touch and we’ll help you set it up.' },
+      { q: 'How do I sign up?', a: 'Click “Join now”, choose whether you want to hire or to work, and create your account with email or “Continue with Google”. It takes a minute, and professionals get free credits to start.' },
+      { q: 'Is it free to join?', a: 'Yes. Creating an account is free. Posting jobs is always free for clients, and professionals get 20 free credits on sign-up.' },
+      { q: 'Can I be both a client and a professional?', a: 'Each account is either for hiring or for working, chosen when you join. If you want to do both, create a second account with a different email address.' },
     ],
   },
   {
@@ -29,7 +29,7 @@ const SECTIONS: { title: string; icon: string; items: QA[] }[] = [
       { q: 'How much does it cost to post a job?', a: 'Nothing. Posting a job and receiving proposals is completely free for clients.' },
       { q: 'How do I choose the right professional?', a: 'Compare the proposals you receive: look at each pro’s profile, skills, past reviews and whether they carry the Recommended badge. You can message anyone with questions before you hire.' },
       { q: 'Do you take a commission on the work?', a: 'No. There’s no commission and no hidden fees. You agree the price directly with the professional you hire.' },
-      { q: 'What if I need to edit or cancel my job?', a: 'You can edit or delete a job from your dashboard. If you delete a job before it has received any proposals, any credits spent to post are refunded automatically.' },
+      { q: 'What if I need to edit or cancel my job?', a: 'You can edit or delete a job from your dashboard. Posting is free, so deleting a job costs you nothing.' },
     ],
   },
   {
@@ -37,8 +37,8 @@ const SECTIONS: { title: string; icon: string; items: QA[] }[] = [
     icon: '🎯',
     items: [
       { q: 'How do I get more work?', a: 'Keep your profile complete and up to date, respond to jobs quickly with a tailored proposal, and collect reviews. Strong ratings earn the Recommended badge and put you in front of more clients.' },
-      { q: 'What are credits and why do I need them?', a: 'Credits let you send proposals to clients. You spend a credit only when you choose to respond to a job — so you’re only ever paying to reach clients you actually want to work with.' },
-      { q: 'How do I get more credits?', a: 'You start with 10 free credits. When you run low you can top up from the “Buy credits” page in your dashboard.' },
+      { q: 'What are credits and why do I need them?', a: 'Credits let you send proposals to clients. Sending a proposal costs 1–6 credits depending on the size of the job, and you only spend them when you choose to respond — so you’re only ever paying to reach clients you actually want to work with.' },
+      { q: 'How do I get more credits?', a: 'You start with 20 free credits. When you run low you can top up from the “Buy credits” page in your dashboard.' },
       { q: 'Can I withdraw a proposal?', a: 'Yes — you can withdraw a pending proposal from your dashboard before the client accepts it.' },
     ],
   },

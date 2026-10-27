@@ -8,6 +8,7 @@ import { api } from '../../../../convex/_generated/api'
 import { Id } from '../../../../convex/_generated/dataModel'
 import { useCurrentUser } from '@/lib/useCurrentUser'
 import { SiteHeader } from '@/components/SiteHeader'
+import { bidCostForBudget } from '../../../../convex/pricing'
 
 export const dynamic = 'force-dynamic'
 
@@ -261,9 +262,9 @@ export default function JobDetailPage() {
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-600">
-                    {job.costCredits}
+                    {bidCostForBudget(job.budgetMax)}
                   </div>
-                  <div className="text-sm text-gray-600">Credits Cost</div>
+                  <div className="text-sm text-gray-600">Credits to quote</div>
                 </div>
               </div>
             </div>

@@ -102,7 +102,10 @@ export default defineSchema({
     .index("by_professional", ["professionalId"]),
 
   ratings: defineTable({
-    jobId: v.id("jobs"),
+    // Absent for reviews from a worker's past customers, left through the
+    // worker's "review me" link rather than for a job booked on the site.
+    jobId: v.optional(v.id("jobs")),
+    source: v.optional(v.literal("invited")),
     reviewerId: v.id("users"),
     revieweeId: v.id("users"),
     rating: v.number(),

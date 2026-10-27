@@ -6,6 +6,8 @@ import { useConvexAuth } from 'convex/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { InAppBrowserNotice } from '@/components/InAppBrowserNotice'
+import { SIGNUP_BONUS_FREELANCER } from '../../../convex/pricing'
+import { takePostAuthRedirect } from '@/lib/postAuthRedirect'
 
 export const dynamic = 'force-dynamic'
 
@@ -57,7 +59,7 @@ function AuthPageInner() {
     try {
       if (isLogin) {
         await signIn('password', { email, password, flow: 'signIn' })
-        setRedirectTo('/dashboard') // navigate once auth confirms (see effect)
+        setRedirectTo(takePostAuthRedirect() ?? '/dashboard') // navigate once auth confirms (see effect)
       } else {
         // Sign up — Convex Auth emails a verification code and does NOT sign in
         // yet. We move to the "enter code" step. profile() sets name/role/credits.
@@ -85,7 +87,10 @@ function AuthPageInner() {
       // they just set, so they land straight in their dashboard (no re-login).
       await signIn('password', { email, code, flow: 'email-verification' })
       await signIn('password', { email, password, flow: 'signIn' })
-      setRedirectTo(role === 'client' ? '/dashboard/client' : '/dashboard/freelancer')
+      setRedirectTo(
+        takePostAuthRedirect() ??
+          (role === 'client' ? '/dashboard/client' : '/dashboard/freelancer'),
+      )
     } catch {
       setMessage('That code was wrong or expired. Check your email and try again.')
     } finally {
@@ -331,7 +336,7 @@ function AuthPageInner() {
                 >
                   <div className="text-2xl mb-2">💼</div>
                   <div className="font-semibold">Hire</div>
-                  <div className="text-sm text-gray-600">25 credits</div>
+                  <div className="text-sm text-gray-600">Post jobs free</div>
                 </button>
                 <button
                   type="button"
@@ -344,7 +349,7 @@ function AuthPageInner() {
                 >
                   <div className="text-2xl mb-2">🎯</div>
                   <div className="font-semibold">Work</div>
-                  <div className="text-sm text-gray-600">10 credits</div>
+                  <div className="text-sm text-gray-600">{SIGNUP_BONUS_FREELANCER} free credits</div>
                 </button>
               </div>
             </div>

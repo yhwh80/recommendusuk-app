@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useState, ReactNode } from 'react'
+import { RoleBadge } from './RoleBadge'
 
 export type NavLink = {
   href: string
@@ -44,6 +45,7 @@ export function SiteHeader({
                 </span>
               </>
             )}
+            <RoleBadge />
           </div>
 
           {/* Desktop nav */}
