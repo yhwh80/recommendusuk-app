@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useConvexAuth, useMutation, useQuery } from 'convex/react'
@@ -8,11 +8,13 @@ import { api } from '../../../convex/_generated/api'
 import { Id } from '../../../convex/_generated/dataModel'
 import { useCurrentUser } from '@/lib/useCurrentUser'
 import { SiteHeader } from '@/components/SiteHeader'
+import { JobPostAssistant, JobDraft } from '@/components/JobPostAssistant'
 
 export default function PostJobPage() {
   const { isLoading, isAuthenticated } = useConvexAuth()
   const user = useCurrentUser()
   const createJob = useMutation(api.jobs.create)
+  const startFormSession = useMutation(api.jobPostAssistant.startFormSession)
   const categories = useQuery(api.categories.list)
   const router = useRouter()
 
@@ -28,6 +30,13 @@ export default function PostJobPage() {
     skills: '',
     deadline: '',
   })
+  // What the customer wrote before applying an AI draft, and the draft itself,
+  // so the job keeps their original words and we can tell accepted from edited.
+  const [originalDescription, setOriginalDescription] = useState<string>()
+  const [appliedDraft, setAppliedDraft] = useState<JobDraft>()
+  const [assistantFailed, setAssistantFailed] = useState(false)
+  const [formSessionId, setFormSessionId] = useState<Id<'postFormSessions'>>()
+  const sessionStarted = useRef(false)
 
   useEffect(() => {
     if (isLoading) return
@@ -39,6 +48,36 @@ export default function PostJobPage() {
       router.push('/dashboard/freelancer')
     }
   }, [isLoading, isAuthenticated, user, router])
+
+  useEffect(() => {
+    if (!isAuthenticated || sessionStarted.current) return
+    sessionStarted.current = true
+    startFormSession()
+      .then((id) => setFormSessionId(id ?? undefined))
+      .catch(() => {})
+  }, [isAuthenticated, startFormSession])
+
+  const applyDraft = (draft: JobDraft) => {
+    setOriginalDescription(formData.description)
+    setAppliedDraft(draft)
+    setFormData({
+      ...formData,
+      title: draft.title,
+      description: draft.description,
+      budget_min: String(draft.budgetMinPounds),
+      budget_max: String(draft.budgetMaxPounds),
+    })
+  }
+
+  const assistantOutcome = () => {
+    if (appliedDraft) {
+      const unchanged =
+        formData.title === appliedDraft.title &&
+        formData.description === appliedDraft.description
+      return unchanged ? 'accepted' : 'edited'
+    }
+    return assistantFailed ? 'unavailable' : 'skipped'
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -65,6 +104,9 @@ export default function PostJobPage() {
         deadline: formData.deadline
           ? new Date(formData.deadline).getTime()
           : undefined,
+        originalDescription,
+        assistantOutcome: assistantOutcome(),
+        formSessionId,
       })
       setMessage('Job posted successfully!')
       setTimeout(() => {
@@ -158,6 +200,14 @@ export default function PostJobPage() {
               />
               <p className="text-sm text-gray-500 mt-1">The more details you provide, the better proposals you&apos;ll receive</p>
             </div>
+
+            <JobPostAssistant
+              title={formData.title}
+              description={formData.description}
+              location={formData.location}
+              onApply={applyDraft}
+              onUnavailable={() => setAssistantFailed(true)}
+            />
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">

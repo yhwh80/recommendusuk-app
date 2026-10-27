@@ -14,6 +14,7 @@
     "stripe:golive": "node scripts/stripe-go-live.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.135.0",
     "@convex-dev/auth": "^0.0.96",
     "@stripe/stripe-js": "^7.4.0",
     "convex": "^1.41.0",
